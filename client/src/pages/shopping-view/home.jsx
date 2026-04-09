@@ -1,22 +1,14 @@
 import { Button } from "@/components/ui/button";
-import bannerOne from "../../assets/banner-1.webp";
-import bannerTwo from "../../assets/banner-2.webp";
-import bannerThree from "../../assets/banner-3.webp";
 import {
-  Airplay,
   BabyIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CloudLightning,
-  Heater,
-  Images,
-  Shirt,
   ShirtIcon,
-  ShoppingBasket,
   UmbrellaIcon,
-  WashingMachine,
   WatchIcon,
 } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +23,61 @@ import { useToast } from "@/components/ui/use-toast";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 
+import { NikeIcon, AdidasIcon, PumaIcon, LeviIcon, ZaraIcon, HMIcon } from "@/components/common/brand-icons";
+
+import p1 from "../../assets/p1.png";
+import p2 from "../../assets/p2.png";
+import p3 from "../../assets/p3.png";
+import p4 from "../../assets/p4.png";
+import b1 from "../../assets/b1.png";
+import b2 from "../../assets/b2.png";
+import b3 from "../../assets/b3.png";
+
+const dummyBanners = [
+  { image: b1 },
+  { image: b2 },
+  { image: b3 },
+];
+
+const dummyProducts = [
+  {
+    _id: "dummy1",
+    image: p1,
+    title: "Signature Leather Jacket",
+    category: "men",
+    brand: "nike",
+    price: 299,
+    salePrice: 199,
+  },
+  {
+    _id: "dummy2",
+    image: p2,
+    title: "Empire Evening Dress",
+    category: "women",
+    brand: "zara",
+    price: 450,
+    salePrice: 380,
+  },
+  {
+    _id: "dummy3",
+    image: p3,
+    title: "Luxe Heritage Bag",
+    category: "accessories",
+    brand: "puma",
+    price: 150,
+    salePrice: 120,
+  },
+  {
+    _id: "dummy4",
+    image: p4,
+    title: "Urban Elite Sneakers",
+    category: "footwear",
+    brand: "adidas",
+    price: 180,
+    salePrice: 145,
+  },
+];
+
 const categoriesWithIcon = [
   { id: "men", label: "Men", icon: ShirtIcon },
   { id: "women", label: "Women", icon: CloudLightning },
@@ -40,13 +87,14 @@ const categoriesWithIcon = [
 ];
 
 const brandsWithIcon = [
-  { id: "nike", label: "Nike", icon: Shirt },
-  { id: "adidas", label: "Adidas", icon: WashingMachine },
-  { id: "puma", label: "Puma", icon: ShoppingBasket },
-  { id: "levi", label: "Levi's", icon: Airplay },
-  { id: "zara", label: "Zara", icon: Images },
-  { id: "h&m", label: "H&M", icon: Heater },
+  { id: "nike", label: "Nike", icon: NikeIcon },
+  { id: "adidas", label: "Adidas", icon: AdidasIcon },
+  { id: "puma", label: "Puma", icon: PumaIcon },
+  { id: "levi", label: "Levi's", icon: LeviIcon },
+  { id: "zara", label: "Zara", icon: ZaraIcon },
+  { id: "h&m", label: "H&M", icon: HMIcon },
 ];
+
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const { productList, productDetails } = useSelector(
@@ -87,7 +135,7 @@ function ShoppingHome() {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
-          title: "Product is added to cart",
+          title: "Product added to bag",
         });
       }
     });
@@ -98,8 +146,9 @@ function ShoppingHome() {
   }, [productDetails]);
 
   useEffect(() => {
+    const banners = featureImageList && featureImageList.length > 0 ? featureImageList : dummyBanners;
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % (banners?.length || 1));
     }, 15000);
 
     return () => clearInterval(timer);
@@ -114,69 +163,96 @@ function ShoppingHome() {
     );
   }, [dispatch]);
 
-  console.log(productList, "productList");
-
   useEffect(() => {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
+  const bannersToShow =
+    featureImageList && featureImageList.length > 0
+      ? featureImageList
+      : dummyBanners;
+
+  // Add defensive check for currentSlide bounds
+  const activeSlide = currentSlide % (bannersToShow.length || 1);
+
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[600px] overflow-hidden">
-        {featureImageList && featureImageList.length > 0
-          ? featureImageList.map((slide, index) => (
-              <img
-                src={slide?.image}
-                key={index}
-                className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000`}
-              />
-            ))
-          : null}
+      <div className="relative w-full h-[60vh] md:h-[80vh] min-h-[400px] overflow-hidden bg-zinc-100">
+        {bannersToShow.map((slide, index) => (
+          <div
+            key={index}
+            className={`${
+              index === activeSlide ? "opacity-100 scale-100" : "opacity-0 scale-105"
+            } absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out`}
+          >
+            <img
+              src={slide?.image}
+              className="w-full h-full object-cover object-center"
+              alt={`Banner ${index + 1}`}
+            />
+            <div className="absolute inset-0 bg-black/10" />
+          </div>
+        ))}
+
+        {/* Banner Navigation Bullets */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+          {bannersToShow.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-1.5 transition-all duration-300 rounded-full ${
+                index === activeSlide ? "w-8 bg-black" : "w-1.5 bg-black/20"
+              }`}
+            />
+          ))}
+        </div>
+
+
         <Button
           variant="outline"
           size="icon"
           onClick={() =>
             setCurrentSlide(
               (prevSlide) =>
-                (prevSlide - 1 + featureImageList.length) %
-                featureImageList.length
+                (prevSlide - 1 + bannersToShow.length) % bannersToShow.length
             )
           }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/50 border-none hover:bg-white transition-colors"
         >
-          <ChevronLeftIcon className="w-4 h-4" />
+          <ChevronLeftIcon className="w-5 h-5 text-black" />
         </Button>
         <Button
           variant="outline"
           size="icon"
           onClick={() =>
             setCurrentSlide(
-              (prevSlide) => (prevSlide + 1) % featureImageList.length
+              (prevSlide) => (prevSlide + 1) % bannersToShow.length
             )
           }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/50 border-none hover:bg-white transition-colors"
         >
-          <ChevronRightIcon className="w-4 h-4" />
+          <ChevronRightIcon className="w-5 h-5 text-black" />
         </Button>
+
       </div>
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Shop by category
+
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
+            Shop by Category
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categoriesWithIcon.map((categoryItem) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+            {categoriesWithIcon.map((categoryItem, idx) => (
               <Card
+                key={idx}
                 onClick={() =>
                   handleNavigateToListingPage(categoryItem, "category")
                 }
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer border-none shadow-none group"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <categoryItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{categoryItem.label}</span>
+                <CardContent className="flex flex-col items-center justify-center p-6 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
+                  <categoryItem.icon className="w-10 h-10 mb-4 text-zinc-800 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+                  <span className="font-semibold uppercase tracking-widest text-xs text-zinc-600 group-hover:text-black transition-colors">{categoryItem.label}</span>
                 </CardContent>
               </Card>
             ))}
@@ -184,41 +260,47 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-12 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {brandsWithIcon.map((brandItem) => (
-              <Card
-                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <brandItem.icon className="w-12 h-12 mb-4 text-primary" />
-                  <span className="font-bold">{brandItem.label}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
-            Feature Products
+      <section className="py-24 bg-zinc-50">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
+            Featured Brands
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {productList && productList.length > 0
-              ? productList.map((productItem) => (
-                  <ShoppingProductTile
-                    handleGetProductDetails={handleGetProductDetails}
-                    product={productItem}
-                    handleAddtoCart={handleAddtoCart}
-                  />
-                ))
-              : null}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+            {brandsWithIcon.map((brandItem, idx) => (
+              <Card
+                key={idx}
+                onClick={() => handleNavigateToListingPage(brandItem, "brand")}
+                className="cursor-pointer border-none shadow-none group bg-transparent"
+              >
+                <CardContent className="flex flex-col items-center justify-center p-6 border border-zinc-200 rounded-xl group-hover:border-black transition-colors">
+                  <brandItem.icon className="w-10 h-10 mb-4 text-zinc-400 group-hover:text-black transition-colors" strokeWidth={1.5} />
+                  <span className="font-semibold uppercase tracking-widest text-xs text-zinc-500 group-hover:text-black transition-colors">{brandItem.label}</span>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 md:px-8">
+          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
+            New Arrivals
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12">
+            {(productList && productList.length > 0
+              ? productList
+              : dummyProducts
+            ).map((productItem) => (
+              <ShoppingProductTile
+                key={productItem._id}
+                handleGetProductDetails={handleGetProductDetails}
+                product={productItem}
+                handleAddtoCart={handleAddtoCart}
+              />
+            ))}
+          </div>
+
         </div>
       </section>
       <ProductDetailsDialog

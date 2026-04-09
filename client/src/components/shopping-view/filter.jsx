@@ -6,18 +6,18 @@ import { Separator } from "../ui/separator";
 
 function ProductFilter({ filters, handleFilter }) {
   return (
-    <div className="bg-background rounded-lg shadow-sm">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-extrabold">Filters</h2>
+    <div className="bg-white rounded-none border-t border-zinc-200">
+      <div className="p-4 py-6 border-b border-zinc-200">
+        <h2 className="text-xl font-serif font-bold tracking-tight uppercase">Filters</h2>
       </div>
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-6">
         {Object.keys(filterOptions).map((keyItem) => (
-          <Fragment>
+          <Fragment key={keyItem}>
             <div>
-              <h3 className="text-base font-bold">{keyItem}</h3>
-              <div className="grid gap-2 mt-2">
+              <h3 className="text-sm font-semibold uppercase tracking-widest text-zinc-500 mb-4">{keyItem}</h3>
+              <div className="grid gap-3">
                 {filterOptions[keyItem].map((option) => (
-                  <Label className="flex font-medium items-center gap-2 ">
+                  <Label key={option.id} className="flex font-medium items-center gap-3 cursor-pointer group">
                     <Checkbox
                       checked={
                         filters &&
@@ -26,13 +26,14 @@ function ProductFilter({ filters, handleFilter }) {
                         filters[keyItem].indexOf(option.id) > -1
                       }
                       onCheckedChange={() => handleFilter(keyItem, option.id)}
+                      className="border-zinc-300 rounded-none data-[state=checked]:bg-black data-[state=checked]:text-white"
                     />
-                    {option.label}
+                    <span className="text-zinc-700 group-hover:text-black transition-colors">{option.label}</span>
                   </Label>
                 ))}
               </div>
             </div>
-            <Separator />
+            <Separator className="bg-zinc-100" />
           </Fragment>
         ))}
       </div>

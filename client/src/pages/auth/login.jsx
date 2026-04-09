@@ -34,30 +34,40 @@ function AuthLogin() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">
-          Sign in to your account
+    <div className="mx-auto w-full max-w-md space-y-8 animate-in fade-in zoom-in duration-500">
+      <div className="text-center space-y-2">
+        <h1 className="text-4xl font-serif font-bold tracking-tight text-primary">
+          Welcome Back
         </h1>
-        <p className="mt-2">
-          Don't have an account
-          <Link
-            className="font-medium ml-2 text-primary hover:underline"
-            to="/auth/register"
-          >
-            Register
-          </Link>
+        <p className="text-muted-foreground font-light">
+          Please enter your details to sign in
         </p>
       </div>
-      <CommonForm
-        formControls={loginFormControls}
-        buttonText={"Sign In"}
-        formData={formData}
-        setFormData={setFormData}
-        onSubmit={onSubmit}
-      />
+
+      <div className="bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+        <CommonForm
+          formControls={loginFormControls}
+          buttonText={"Sign In"}
+          formData={formData}
+          setFormData={setFormData}
+          onSubmit={onSubmit}
+        />
+        
+        <div className="mt-8 pt-6 border-t border-gray-100 text-center">
+          <p className="text-sm text-gray-500">
+            New to our platform?
+            <Link
+              className="font-semibold ml-2 text-primary hover:text-primary/80 transition-colors underline-offset-4 hover:underline"
+              to="/auth/register"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default AuthLogin;
+

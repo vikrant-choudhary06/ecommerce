@@ -17,8 +17,6 @@ function ShoppingCheckout() {
   const dispatch = useDispatch();
   const { toast } = useToast();
 
-  console.log(currentSelectedAddress, "cartItems");
-
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
       ? cartItems.items.reduce(
@@ -35,7 +33,7 @@ function ShoppingCheckout() {
   function handleInitiatePaypalPayment() {
     if (cartItems.length === 0) {
       toast({
-        title: "Your cart is empty. Please add items to proceed",
+        title: "Your bag is empty. Please add items to proceed",
         variant: "destructive",
       });
 
@@ -82,7 +80,6 @@ function ShoppingCheckout() {
     };
 
     dispatch(createNewOrder(orderData)).then((data) => {
-      console.log(data, "sangam");
       if (data?.payload?.success) {
         setIsPaymemntStart(true);
       } else {
@@ -96,33 +93,48 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="relative h-[300px] w-full overflow-hidden">
-        <img src={img} className="h-full w-full object-cover object-center" />
+    <div className="flex flex-col min-h-screen">
+      <div className="relative h-[400px] w-full overflow-hidden bg-zinc-100 flex items-center justify-center">
+        {/* Keeping image but adding a dark overlay or fallback style if missing */}
+        <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-50" />
+        <h1 className="relative z-10 text-5xl font-serif text-black uppercase tracking-widest font-bold">Checkout</h1>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5 p-5">
-        <Address
-          selectedId={currentSelectedAddress}
-          setCurrentSelectedAddress={setCurrentSelectedAddress}
-        />
-        <div className="flex flex-col gap-4">
-          {cartItems && cartItems.items && cartItems.items.length > 0
-            ? cartItems.items.map((item) => (
-                <UserCartItemsContent cartItem={item} />
-              ))
-            : null}
-          <div className="mt-8 space-y-4">
-            <div className="flex justify-between">
-              <span className="font-bold">Total</span>
-              <span className="font-bold">${totalCartAmount}</span>
-            </div>
+      <div className="container mx-auto px-4 md:px-8 max-w-[1200px]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 mb-24">
+          <div className="flex flex-col gap-6">
+            <h2 className="text-2xl font-serif font-bold uppercase tracking-tight border-b border-zinc-200 pb-4">Shipping Information</h2>
+            <Address
+              selectedId={currentSelectedAddress}
+              setCurrentSelectedAddress={setCurrentSelectedAddress}
+            />
           </div>
-          <div className="mt-4 w-full">
-            <Button onClick={handleInitiatePaypalPayment} className="w-full">
-              {isPaymentStart
-                ? "Processing Paypal Payment..."
-                : "Checkout with Paypal"}
-            </Button>
+          <div className="flex flex-col gap-6 bg-zinc-50 p-8 border border-zinc-200">
+            <h2 className="text-2xl font-serif font-bold uppercase tracking-tight border-b border-zinc-200 pb-4">Order Summary</h2>
+            <div className="space-y-4">
+              {cartItems && cartItems.items && cartItems.items.length > 0
+                ? cartItems.items.map((item) => (
+                    <UserCartItemsContent key={item.productId} cartItem={item} />
+                  ))
+                : <p className="text-zinc-500 text-center py-4">Your bag is empty.</p>}
+            </div>
+            
+            <div className="mt-8 space-y-4 border-t border-zinc-200 pt-6">
+              <div className="flex justify-between items-center text-lg">
+                <span className="font-semibold uppercase tracking-wider text-sm text-zinc-600">Subtotal</span>
+                <span className="font-bold text-black">${totalCartAmount.toFixed(2)}</span>
+              </div>
+            </div>
+            
+            <div className="mt-6 w-full">
+              <Button 
+                onClick={handleInitiatePaypalPayment} 
+                className="w-full bg-black text-white hover:bg-zinc-800 rounded-none uppercase tracking-widest py-6 text-sm"
+              >
+                {isPaymentStart
+                  ? "Processing Paypal Payment..."
+                  : "Checkout safely with Paypal"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
