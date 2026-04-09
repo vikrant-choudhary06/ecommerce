@@ -1,9 +1,7 @@
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import { fetchProductDetails } from "@/store/shop/products-slice";
 import {
   getSearchResults,
   resetSearchResults,
@@ -14,18 +12,16 @@ import { useSearchParams } from "react-router-dom";
 
 function SearchProducts() {
   const [keyword, setKeyword] = useState("");
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const dispatch = useDispatch();
-  const { searchResults } = useSelector((state) => state.shopSearch);
-  const { productDetails } = useSelector((state) => state.shopProducts);
 
   const { user } = useSelector((state) => state.auth);
 
   const { cartItems } = useSelector((state) => state.shopCart);
+  const { searchResults } = useSelector((state) => state.shopSearch);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
   const { toast } = useToast();
   useEffect(() => {
-    if (keyword && keyword.trim() !== "" && keyword.trim().length > 3) {
+    if (keyword && keyword.trim() !== "" && keyword.trim().length > 2) {
       setTimeout(() => {
         setSearchParams(new URLSearchParams(`?keyword=${keyword}`));
         dispatch(getSearchResults(keyword));
@@ -73,14 +69,6 @@ function SearchProducts() {
     });
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
-    console.log(getCurrentProductId);
-    dispatch(fetchProductDetails(getCurrentProductId));
-  }
-
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
 
   console.log(searchResults, "searchResults");
 
@@ -98,22 +86,19 @@ function SearchProducts() {
         </div>
       </div>
       {!searchResults.length ? (
-        <h1 className="text-5xl font-extrabold">No result found!</h1>
+        <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in duration-500">
+          <h1 className="text-4xl font-serif font-bold text-muted-foreground opacity-50 uppercase tracking-widest">No results found</h1>
+          <p className="text-muted-foreground mt-2">Try searching for something else, like "Shirts" or "Accessories"</p>
+        </div>
       ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {searchResults.map((item) => (
           <ShoppingProductTile
             handleAddtoCart={handleAddtoCart}
             product={item}
-            handleGetProductDetails={handleGetProductDetails}
           />
         ))}
       </div>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
   );
 }

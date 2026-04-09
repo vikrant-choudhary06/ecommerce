@@ -1,4 +1,4 @@
-import { LogOut, Menu, ShoppingBag, UserCog } from "lucide-react";
+import { LogOut, Menu, ShoppingBag, UserCog, Sun, Moon } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -23,6 +23,7 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
+import { useTheme } from "../common/theme-provider";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ function MenuItems() {
       {shoppingViewHeaderMenuItems.map((menuItem) => (
         <Label
           onClick={() => handleNavigate(menuItem)}
-          className="text-xs font-semibold uppercase tracking-widest cursor-pointer hover:text-zinc-500 transition-colors"
+          className="text-xs font-semibold uppercase tracking-widest cursor-pointer hover:text-muted-foreground transition-colors"
           key={menuItem.id}
         >
           {menuItem.label}
@@ -72,6 +73,7 @@ function HeaderRightContent() {
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { theme, setTheme } = useTheme();
 
   function handleLogout() {
     dispatch(logoutUser());
@@ -85,6 +87,15 @@ function HeaderRightContent() {
 
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="hover:bg-transparent hover:opacity-75"
+      >
+        {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        <span className="sr-only">Toggle theme</span>
+      </Button>
       <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
         <Button
           onClick={() => setOpenCartSheet(true)}
@@ -111,8 +122,8 @@ function HeaderRightContent() {
       {isAuthenticated ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="bg-transparent border border-zinc-200 cursor-pointer hover:bg-zinc-100 transition-colors w-9 h-9">
-              <AvatarFallback className="bg-transparent text-black font-semibold text-xs">
+            <Avatar className="bg-transparent border border-border cursor-pointer hover:bg-muted transition-colors w-9 h-9">
+              <AvatarFallback className="bg-transparent text-foreground font-semibold text-xs">
                 {user?.userName ? user.userName[0].toUpperCase() : "U"}
               </AvatarFallback>
             </Avatar>
@@ -135,7 +146,7 @@ function HeaderRightContent() {
         <Button 
           onClick={() => navigate("/auth/login")} 
           variant="ghost" 
-          className="text-xs font-semibold uppercase tracking-widest cursor-pointer hover:bg-transparent hover:text-zinc-500 transition-colors px-2"
+          className="text-xs font-semibold uppercase tracking-widest cursor-pointer hover:bg-transparent hover:text-muted-foreground transition-colors px-2"
         >
           Login
         </Button>
@@ -148,7 +159,7 @@ function ShoppingHeader() {
   const { isAuthenticated } = useSelector((state) => state.auth);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-200 bg-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
       <div className="flex h-20 items-center justify-between px-4 md:px-8">
         <div className="flex items-center lg:w-1/4">
           <Link to="/shop/home" className="flex flex-col items-center gap-0">

@@ -103,10 +103,10 @@ function ShoppingCheckout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative h-[400px] w-full overflow-hidden bg-zinc-100 flex items-center justify-center">
+      <div className="relative h-[400px] w-full overflow-hidden bg-muted flex items-center justify-center">
         {/* Keeping image but adding a dark overlay or fallback style if missing */}
         <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-50" />
-        <h1 className="relative z-10 text-5xl font-serif text-black uppercase tracking-widest font-bold">Checkout</h1>
+        <h1 className="relative z-10 text-5xl font-serif text-foreground uppercase tracking-widest font-bold">Checkout</h1>
       </div>
       <div className="container mx-auto px-4 md:px-8 max-w-[1200px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 mb-24">
@@ -117,20 +117,20 @@ function ShoppingCheckout() {
               setCurrentSelectedAddress={setCurrentSelectedAddress}
             />
           </div>
-          <div className="flex flex-col gap-6 bg-zinc-50 p-8 border border-zinc-200">
+          <div className="flex flex-col gap-6 bg-muted p-8 border border-border">
             <h2 className="text-2xl font-serif font-bold uppercase tracking-tight border-b border-zinc-200 pb-4">Order Summary</h2>
             <div className="space-y-4">
               {cartItems && cartItems.items && cartItems.items.length > 0
                 ? cartItems.items.map((item) => (
                     <UserCartItemsContent key={item.productId} cartItem={item} />
                   ))
-                : <p className="text-zinc-500 text-center py-4">Your bag is empty.</p>}
+                : <p className="text-muted-foreground text-center py-4">Your bag is empty.</p>}
             </div>
             
             
             <div className="mt-8 space-y-4 border-t border-zinc-200 pt-6">
               <div className="flex flex-col gap-3 mb-6">
-                <span className="font-semibold uppercase tracking-wider text-sm text-zinc-600">Payment Method</span>
+                <span className="font-semibold uppercase tracking-wider text-sm text-muted-foreground">Payment Method</span>
                 <label className="flex items-center gap-3 cursor-pointer p-3 border border-zinc-200 hover:border-black transition-colors">
                   <input 
                     type="radio" 
@@ -138,7 +138,7 @@ function ShoppingCheckout() {
                     value="paypal" 
                     checked={paymentMethod === "paypal"} 
                     onChange={() => setPaymentMethod("paypal")} 
-                    className="accent-black w-4 h-4"
+                    className="accent-primary w-4 h-4"
                   />
                   <span>Online Payment (Paypal)</span>
                 </label>
@@ -149,22 +149,22 @@ function ShoppingCheckout() {
                     value="cod" 
                     checked={paymentMethod === "cod"} 
                     onChange={() => setPaymentMethod("cod")} 
-                    className="accent-black w-4 h-4"
+                    className="accent-primary w-4 h-4"
                   />
                   <span>Cash on Delivery (COD)</span>
                 </label>
               </div>
 
               <div className="flex justify-between items-center text-lg">
-                <span className="font-semibold uppercase tracking-wider text-sm text-zinc-600">Subtotal</span>
-                <span className="font-bold text-black">${totalCartAmount.toFixed(2)}</span>
+                <span className="font-semibold uppercase tracking-wider text-sm text-muted-foreground">Subtotal</span>
+                <span className="font-bold text-foreground">${totalCartAmount.toFixed(2)}</span>
               </div>
             </div>
             
             <div className="mt-6 w-full">
               <Button 
                 onClick={handleInitiatePayment} 
-                className="w-full bg-black text-white hover:bg-zinc-800 rounded-none uppercase tracking-widest py-6 text-sm"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-widest py-6 text-sm"
               >
                 {isPaymentStart
                   ? "Processing Paypal Transaction..."
@@ -176,11 +176,11 @@ function ShoppingCheckout() {
       </div>
 
       {isOrderPlaced && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="flex flex-col items-center gap-4 animate-in zoom-in-50 duration-500 delay-150">
             <CheckCircleIcon className="w-24 h-24 text-green-500" strokeWidth={1.5} />
-            <h2 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">Order Placed Successfully!</h2>
-            <p className="text-zinc-500 text-lg">Redirecting you...</p>
+            <h2 className="text-3xl font-serif font-bold text-foreground tracking-tight">Order Placed Successfully!</h2>
+            <p className="text-muted-foreground text-lg">Redirecting you...</p>
           </div>
         </div>
       )}

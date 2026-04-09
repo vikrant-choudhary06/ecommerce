@@ -25,22 +25,22 @@ function FAQ() {
   return (
     <div className="container mx-auto px-4 py-16 max-w-3xl min-h-[60vh]">
       <h1 className="text-4xl font-serif font-bold mb-4 text-center">Frequently Asked Questions</h1>
-      <p className="text-zinc-600 mb-12 text-center text-lg">
+      <p className="text-muted-foreground mb-12 text-center text-lg">
         Find answers to our most commonly asked questions below.
       </p>
       
       <div className="space-y-6">
         {faqs.map((faq, index) => (
-          <div key={index} className="border-b border-zinc-200 pb-6">
+          <div key={index} className="border-b border-border pb-6">
             <h3 className="text-lg font-bold mb-2">{faq.question}</h3>
-            <p className="text-zinc-600 leading-relaxed">{faq.answer}</p>
+            <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
           </div>
         ))}
       </div>
       
       <div className="mt-12 text-center">
-        <p className="text-zinc-600">
-          Still have questions? <a href="/shop/contact" className="text-black font-semibold underline underline-offset-4">Contact our support team</a>.
+        <p className="text-muted-foreground">
+          Still have questions? <a href="/shop/contact" className="text-foreground font-semibold underline underline-offset-4">Contact our support team</a>.
         </p>
       </div>
     </div>

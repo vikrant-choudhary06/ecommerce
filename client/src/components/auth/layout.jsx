@@ -23,7 +23,7 @@ function AuthLayout() {
           </div>
         </div>
       </div>
-      <div className="flex flex-1 items-center justify-center bg-[#fafafa] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="flex flex-1 items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md">
           <Outlet />
         </div>

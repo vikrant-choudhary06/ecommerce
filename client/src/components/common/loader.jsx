@@ -1,6 +1,6 @@
 const Loader = () => {
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-white z-[9999]">
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-[9999]">
       <div className="relative flex flex-col items-center gap-6">
         {/* Abstract Logo Animation */}
         <div className="relative w-24 h-24">

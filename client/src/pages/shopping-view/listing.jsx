@@ -1,5 +1,4 @@
 import ProductFilter from "@/components/shopping-view/filter";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +11,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { sortOptions } from "@/config";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
-import {
-  fetchAllFilteredProducts,
-  fetchProductDetails,
-} from "@/store/shop/products-slice";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,7 +41,6 @@ function ShoppingListing() {
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
   const { toast } = useToast();
 
   const categorySearchParam = searchParams.get("category");
@@ -76,9 +71,7 @@ function ShoppingListing() {
     sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
-  }
+
 
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     let getCartItems = cartItems?.items || [];
@@ -135,15 +128,12 @@ function ShoppingListing() {
       );
   }, [dispatch, sort, filters]);
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 p-4 md:p-8 max-w-[1600px] mx-auto w-full">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
-      <div className="bg-white w-full rounded-none">
-        <div className="p-4 border-b border-zinc-200 flex items-center justify-between">
+      <div className="bg-background w-full rounded-none">
+        <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-2xl font-serif font-bold tracking-tight">Collection</h2>
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground text-sm uppercase tracking-wider">
@@ -154,7 +144,7 @@ function ShoppingListing() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="flex items-center gap-2 rounded-none border-zinc-300"
+                  className="flex items-center gap-2 rounded-none border-border"
                 >
                   <ArrowUpDownIcon className="h-4 w-4" />
                   <span className="uppercase text-xs tracking-wider font-semibold">Sort</span>
@@ -181,19 +171,13 @@ function ShoppingListing() {
             ? productList.map((productItem) => (
                 <ShoppingProductTile
                   key={productItem._id}
-                  handleGetProductDetails={handleGetProductDetails}
                   product={productItem}
                   handleAddtoCart={handleAddtoCart}
                 />
               ))
-            : <div className="col-span-full py-12 text-center text-zinc-500">No products found matching your criteria.</div>}
+            : <div className="col-span-full py-12 text-center text-muted-foreground">No products found matching your criteria.</div>}
         </div>
       </div>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
   );
 }

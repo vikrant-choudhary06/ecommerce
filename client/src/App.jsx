@@ -11,6 +11,7 @@ import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/not-found";
 import ShoppingHome from "./pages/shopping-view/home";
 import ShoppingListing from "./pages/shopping-view/listing";
+import ShoppingProductDetails from "./pages/shopping-view/product-details";
 import ShoppingCheckout from "./pages/shopping-view/checkout";
 import ShoppingAccount from "./pages/shopping-view/account";
 import CheckAuth from "./components/common/check-auth";
@@ -26,6 +27,7 @@ import ContactUs from "./pages/shopping-view/contact";
 import FAQ from "./pages/shopping-view/faq";
 import ShippingAndReturns from "./pages/shopping-view/returns";
 import SizeGuide from "./pages/shopping-view/size-guide";
+import ScrollToTop from "./components/common/scroll-to-top";
 
 
 function App() {
@@ -42,7 +44,8 @@ function App() {
 
 
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="flex flex-col overflow-hidden bg-background text-foreground min-h-screen">
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -87,6 +90,7 @@ function App() {
         >
           <Route path="home" element={<ShoppingHome />} />
           <Route path="listing" element={<ShoppingListing />} />
+          <Route path="product/:id" element={<ShoppingProductDetails />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="paypal-return" element={<PaypalReturnPage />} />

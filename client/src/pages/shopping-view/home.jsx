@@ -14,13 +14,11 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllFilteredProducts,
-  fetchProductDetails,
 } from "@/store/shop/products-slice";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import { useToast } from "@/components/ui/use-toast";
-import ProductDetailsDialog from "@/components/shopping-view/product-details";
 import { getFeatureImages } from "@/store/common-slice";
 
 import { NikeIcon, AdidasIcon, PumaIcon, LeviIcon, ZaraIcon, HMIcon } from "@/components/common/brand-icons";
@@ -98,8 +96,6 @@ function ShoppingHome() {
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
 
-  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
@@ -117,9 +113,7 @@ function ShoppingHome() {
     window.scrollTo(0, 0);
   }
 
-  function handleGetProductDetails(getCurrentProductId) {
-    dispatch(fetchProductDetails(getCurrentProductId));
-  }
+
 
   function handleAddtoCart(getCurrentProductId) {
     dispatch(
@@ -138,9 +132,6 @@ function ShoppingHome() {
     });
   }
 
-  useEffect(() => {
-    if (productDetails !== null) setOpenDetailsDialog(true);
-  }, [productDetails]);
 
   useEffect(() => {
     const banners = dummyBanners;
@@ -171,7 +162,7 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[60vh] md:h-[80vh] min-h-[400px] overflow-hidden bg-zinc-100">
+      <div className="relative w-full h-[60vh] md:h-[80vh] min-h-[400px] overflow-hidden bg-muted">
         {bannersToShow.map((slide, index) => (
           <div
             key={index}
@@ -195,7 +186,7 @@ function ShoppingHome() {
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`h-1.5 transition-all duration-300 rounded-full ${
-                index === activeSlide ? "w-8 bg-black" : "w-1.5 bg-black/20"
+                index === activeSlide ? "w-8 bg-primary" : "w-1.5 bg-primary/20"
               }`}
             />
           ))}
@@ -211,9 +202,9 @@ function ShoppingHome() {
                 (prevSlide - 1 + bannersToShow.length) % bannersToShow.length
             )
           }
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/50 border-none hover:bg-white transition-colors"
+          className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-background/50 border-none hover:bg-background transition-colors"
         >
-          <ChevronLeftIcon className="w-5 h-5 text-black" />
+          <ChevronLeftIcon className="w-5 h-5 text-foreground" />
         </Button>
         <Button
           variant="outline"
@@ -223,14 +214,14 @@ function ShoppingHome() {
               (prevSlide) => (prevSlide + 1) % bannersToShow.length
             )
           }
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/50 border-none hover:bg-white transition-colors"
+          className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-background/50 border-none hover:bg-background transition-colors"
         >
-          <ChevronRightIcon className="w-5 h-5 text-black" />
+          <ChevronRightIcon className="w-5 h-5 text-foreground" />
         </Button>
 
       </div>
 
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4 md:px-8">
           <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
             Shop by Category
@@ -244,9 +235,9 @@ function ShoppingHome() {
                 }
                 className="cursor-pointer border-none shadow-none group"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6 bg-zinc-50 rounded-xl group-hover:bg-zinc-100 transition-colors">
-                  <categoryItem.icon className="w-10 h-10 mb-4 text-zinc-800 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
-                  <span className="font-semibold uppercase tracking-widest text-xs text-zinc-600 group-hover:text-black transition-colors">{categoryItem.label}</span>
+                <CardContent className="flex flex-col items-center justify-center p-6 bg-muted rounded-xl group-hover:bg-muted/80 transition-colors">
+                  <categoryItem.icon className="w-10 h-10 mb-4 text-foreground/80 group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+                  <span className="font-semibold uppercase tracking-widest text-xs text-muted-foreground group-hover:text-foreground transition-colors">{categoryItem.label}</span>
                 </CardContent>
               </Card>
             ))}
@@ -254,7 +245,7 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-24 bg-zinc-50">
+      <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-4 md:px-8">
           <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
             Featured Brands
@@ -266,9 +257,9 @@ function ShoppingHome() {
                 onClick={() => handleNavigateToListingPage(brandItem, "brand")}
                 className="cursor-pointer border-none shadow-none group bg-transparent"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6 border border-zinc-200 rounded-xl group-hover:border-black transition-colors">
-                  <brandItem.icon className="w-10 h-10 mb-4 text-zinc-400 group-hover:text-black transition-colors" strokeWidth={1.5} />
-                  <span className="font-semibold uppercase tracking-widest text-xs text-zinc-500 group-hover:text-black transition-colors">{brandItem.label}</span>
+                <CardContent className="flex flex-col items-center justify-center p-6 border border-border rounded-xl group-hover:border-primary transition-colors">
+                  <brandItem.icon className="w-10 h-10 mb-4 text-muted-foreground group-hover:text-foreground transition-colors" strokeWidth={1.5} />
+                  <span className="font-semibold uppercase tracking-widest text-xs text-muted-foreground group-hover:text-foreground transition-colors">{brandItem.label}</span>
                 </CardContent>
               </Card>
             ))}
@@ -276,7 +267,7 @@ function ShoppingHome() {
         </div>
       </section>
 
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-background">
         <div className="container mx-auto px-4 md:px-8">
           <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
             New Arrivals
@@ -288,7 +279,6 @@ function ShoppingHome() {
             ).map((productItem) => (
               <ShoppingProductTile
                 key={productItem._id}
-                handleGetProductDetails={handleGetProductDetails}
                 product={productItem}
                 handleAddtoCart={handleAddtoCart}
               />
@@ -297,11 +287,6 @@ function ShoppingHome() {
 
         </div>
       </section>
-      <ProductDetailsDialog
-        open={openDetailsDialog}
-        setOpen={setOpenDetailsDialog}
-        productDetails={productDetails}
-      />
     </div>
   );
 }

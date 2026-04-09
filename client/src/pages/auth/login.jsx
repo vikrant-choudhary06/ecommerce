@@ -44,7 +44,7 @@ function AuthLogin() {
         </p>
       </div>
 
-      <div className="bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
+      <div className="bg-card p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-border">
         <CommonForm
           formControls={loginFormControls}
           buttonText={"Sign In"}
