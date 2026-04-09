@@ -58,9 +58,9 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", label: "Men" },
-      { id: "women", label: "Women" },
-      { id: "kids", label: "Kids" },
+      { id: "shirts", label: "Shirts" },
+      { id: "pants", label: "Pants & Jeans" },
+      { id: "outerwear", label: "Outerwear" },
       { id: "accessories", label: "Accessories" },
       { id: "footwear", label: "Footwear" },
     ],
@@ -109,32 +109,32 @@ export const shoppingViewHeaderMenuItems = [
   },
   {
     id: "products",
-    label: "Products",
+    label: "All Products",
     path: "/shop/listing",
   },
   {
-    id: "men",
-    label: "Men",
+    id: "shirts",
+    label: "Shirts",
     path: "/shop/listing",
   },
   {
-    id: "women",
-    label: "Women",
+    id: "pants",
+    label: "Pants & Jeans",
     path: "/shop/listing",
   },
   {
-    id: "kids",
-    label: "Kids",
-    path: "/shop/listing",
-  },
-  {
-    id: "footwear",
-    label: "Footwear",
+    id: "outerwear",
+    label: "Outerwear",
     path: "/shop/listing",
   },
   {
     id: "accessories",
     label: "Accessories",
+    path: "/shop/listing",
+  },
+  {
+    id: "footwear",
+    label: "Footwear",
     path: "/shop/listing",
   },
   {
@@ -145,9 +145,9 @@ export const shoppingViewHeaderMenuItems = [
 ];
 
 export const categoryOptionsMap = {
-  men: "Men",
-  women: "Women",
-  kids: "Kids",
+  shirts: "Shirts",
+  pants: "Pants & Jeans",
+  outerwear: "Outerwear",
   accessories: "Accessories",
   footwear: "Footwear",
 };
@@ -163,9 +163,9 @@ export const brandOptionsMap = {
 
 export const filterOptions = {
   category: [
-    { id: "men", label: "Men" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
+    { id: "shirts", label: "Shirts" },
+    { id: "pants", label: "Pants & Jeans" },
+    { id: "outerwear", label: "Outerwear" },
     { id: "accessories", label: "Accessories" },
     { id: "footwear", label: "Footwear" },
   ],

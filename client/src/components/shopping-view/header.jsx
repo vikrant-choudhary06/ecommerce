@@ -47,6 +47,8 @@ function MenuItems() {
           new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
         )
       : navigate(getCurrentMenuItem.path);
+      
+    window.scrollTo(0, 0);
   }
 
   return (

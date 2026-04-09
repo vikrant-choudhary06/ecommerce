@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
 import {
-  BabyIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   CloudLightning,
   ShirtIcon,
   UmbrellaIcon,
   WatchIcon,
+  ShoppingBag
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,14 +29,10 @@ import p1 from "../../assets/p1.png";
 import p2 from "../../assets/p2.png";
 import p3 from "../../assets/p3.png";
 import p4 from "../../assets/p4.png";
-import b1 from "../../assets/b1.png";
-import b2 from "../../assets/b2.png";
-import b3 from "../../assets/b3.png";
-
 const dummyBanners = [
-  { image: b1 },
-  { image: b2 },
-  { image: b3 },
+  { image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=2000&q=80" },
+  { image: "https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=2000&q=80" },
+  { image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=2000&q=80" },
 ];
 
 const dummyProducts = [
@@ -44,7 +40,7 @@ const dummyProducts = [
     _id: "dummy1",
     image: p1,
     title: "Signature Leather Jacket",
-    category: "men",
+    category: "outerwear",
     brand: "nike",
     price: 299,
     salePrice: 199,
@@ -52,16 +48,16 @@ const dummyProducts = [
   {
     _id: "dummy2",
     image: p2,
-    title: "Empire Evening Dress",
-    category: "women",
+    title: "Classic Oxford Shirt",
+    category: "shirts",
     brand: "zara",
-    price: 450,
-    salePrice: 380,
+    price: 80,
+    salePrice: 65,
   },
   {
     _id: "dummy3",
     image: p3,
-    title: "Luxe Heritage Bag",
+    title: "Luxe Leather Satchel",
     category: "accessories",
     brand: "puma",
     price: 150,
@@ -79,9 +75,9 @@ const dummyProducts = [
 ];
 
 const categoriesWithIcon = [
-  { id: "men", label: "Men", icon: ShirtIcon },
-  { id: "women", label: "Women", icon: CloudLightning },
-  { id: "kids", label: "Kids", icon: BabyIcon },
+  { id: "shirts", label: "Shirts", icon: ShirtIcon },
+  { id: "pants", label: "Pants & Jeans", icon: ShoppingBag },
+  { id: "outerwear", label: "Outerwear", icon: CloudLightning },
   { id: "accessories", label: "Accessories", icon: WatchIcon },
   { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
 ];
@@ -118,6 +114,7 @@ function ShoppingHome() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
     navigate(`/shop/listing`);
+    window.scrollTo(0, 0);
   }
 
   function handleGetProductDetails(getCurrentProductId) {
@@ -146,13 +143,13 @@ function ShoppingHome() {
   }, [productDetails]);
 
   useEffect(() => {
-    const banners = featureImageList && featureImageList.length > 0 ? featureImageList : dummyBanners;
+    const banners = dummyBanners;
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % (banners?.length || 1));
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % banners.length);
     }, 15000);
 
     return () => clearInterval(timer);
-  }, [featureImageList]);
+  }, []);
 
   useEffect(() => {
     dispatch(
@@ -167,10 +164,7 @@ function ShoppingHome() {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
-  const bannersToShow =
-    featureImageList && featureImageList.length > 0
-      ? featureImageList
-      : dummyBanners;
+  const bannersToShow = dummyBanners;
 
   // Add defensive check for currentSlide bounds
   const activeSlide = currentSlide % (bannersToShow.length || 1);

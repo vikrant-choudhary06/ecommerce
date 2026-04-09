@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
 function ShoppingFooter() {
+  const navigate = useNavigate();
+
+  function handleNavigateToCategory(categoryId) {
+    sessionStorage.removeItem("filters");
+    const currentFilter = { category: [categoryId] };
+    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
+    navigate(`/shop/listing?category=${categoryId}`);
+    window.scrollTo(0, 0);
+  }
+
   return (
     <footer className="bg-zinc-950 text-white py-16 px-4 md:px-8">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -11,7 +21,7 @@ function ShoppingFooter() {
             <span className="text-xs font-bold tracking-widest uppercase font-sans mt-1">Brand Life Store</span>
           </Link>
           <p className="text-zinc-400 text-sm leading-relaxed mt-2">
-            Elevate your everyday style with our premium collection of ethically made, sustainably sourced clothing.
+            Elevate your everyday style with our premium collection of ethically made, sustainably sourced men's clothing.
           </p>
           <div className="flex space-x-4 pt-4">
             <a href="#" className="text-zinc-400 hover:text-white transition-colors">
@@ -31,18 +41,19 @@ function ShoppingFooter() {
 
         <div className="flex flex-col space-y-4">
           <h4 className="font-semibold text-lg">Shop</h4>
-          <Link to="/shop/listing?category=men" className="text-zinc-400 hover:text-white text-sm transition-colors">Menswear</Link>
-          <Link to="/shop/listing?category=women" className="text-zinc-400 hover:text-white text-sm transition-colors">Womenswear</Link>
-          <Link to="/shop/listing?category=accessories" className="text-zinc-400 hover:text-white text-sm transition-colors">Accessories</Link>
-          <Link to="/shop/listing?category=footwear" className="text-zinc-400 hover:text-white text-sm transition-colors">Footwear</Link>
+          <span onClick={() => handleNavigateToCategory("shirts")} className="text-zinc-400 hover:text-white text-sm transition-colors cursor-pointer">Shirts</span>
+          <span onClick={() => handleNavigateToCategory("pants")} className="text-zinc-400 hover:text-white text-sm transition-colors cursor-pointer">Pants & Jeans</span>
+          <span onClick={() => handleNavigateToCategory("outerwear")} className="text-zinc-400 hover:text-white text-sm transition-colors cursor-pointer">Outerwear</span>
+          <span onClick={() => handleNavigateToCategory("accessories")} className="text-zinc-400 hover:text-white text-sm transition-colors cursor-pointer">Accessories</span>
+          <span onClick={() => handleNavigateToCategory("footwear")} className="text-zinc-400 hover:text-white text-sm transition-colors cursor-pointer">Footwear</span>
         </div>
 
         <div className="flex flex-col space-y-4">
           <h4 className="font-semibold text-lg">Support</h4>
-          <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors">Contact Us</a>
-          <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors">FAQs</a>
-          <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors">Shipping & Returns</a>
-          <a href="#" className="text-zinc-400 hover:text-white text-sm transition-colors">Size Guide</a>
+          <Link to="/shop/contact" className="text-zinc-400 hover:text-white text-sm transition-colors">Contact Us</Link>
+          <Link to="/shop/faq" className="text-zinc-400 hover:text-white text-sm transition-colors">FAQs</Link>
+          <Link to="/shop/returns" className="text-zinc-400 hover:text-white text-sm transition-colors">Shipping & Returns</Link>
+          <Link to="/shop/size-guide" className="text-zinc-400 hover:text-white text-sm transition-colors">Size Guide</Link>
         </div>
 
         <div className="flex flex-col space-y-4">

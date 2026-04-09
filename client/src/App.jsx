@@ -22,6 +22,10 @@ import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success";
 import SearchProducts from "./pages/shopping-view/search";
 import Loader from "./components/common/loader";
+import ContactUs from "./pages/shopping-view/contact";
+import FAQ from "./pages/shopping-view/faq";
+import ShippingAndReturns from "./pages/shopping-view/returns";
+import SizeGuide from "./pages/shopping-view/size-guide";
 
 
 function App() {
@@ -88,6 +92,10 @@ function App() {
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<SearchProducts />} />
+          <Route path="contact" element={<ContactUs />} />
+          <Route path="faq" element={<FAQ />} />
+          <Route path="returns" element={<ShippingAndReturns />} />
+          <Route path="size-guide" element={<SizeGuide />} />
         </Route>
         <Route path="/unauth-page" element={<UnauthPage />} />
         <Route path="*" element={<NotFound />} />

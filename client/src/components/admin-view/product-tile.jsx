@@ -6,6 +6,7 @@ function AdminProductTile({
   setFormData,
   setOpenCreateProductsDialog,
   setCurrentEditedId,
+  setUploadedImageUrls,
   handleDelete,
 }) {
   return (
@@ -39,6 +40,9 @@ function AdminProductTile({
               setOpenCreateProductsDialog(true);
               setCurrentEditedId(product?._id);
               setFormData(product);
+              if (setUploadedImageUrls) {
+                setUploadedImageUrls(product?.images?.length ? product.images : (product?.image ? [product.image] : []));
+              }
             }}
           >
             Edit

@@ -20,6 +20,44 @@ const createOrder = async (req, res) => {
       cartId,
     } = req.body;
 
+    if (paymentMethod === "cod") {
+      const newlyCreatedOrder = new Order({
+        userId,
+        cartId,
+        cartItems,
+        addressInfo,
+        orderStatus: "confirmed",
+        paymentMethod: "cod",
+        paymentStatus: "pending",
+        totalAmount,
+        orderDate,
+        orderUpdateDate,
+        paymentId: "COD-" + Date.now(),
+        payerId: "COD-" + userId,
+      });
+
+      await newlyCreatedOrder.save();
+
+      for (let item of cartItems) {
+        let product = await Product.findById(item.productId);
+        if (!product) {
+          return res.status(404).json({
+            success: false,
+            message: `Not enough stock for this product ${product?.title}`,
+          });
+        }
+        product.totalStock -= item.quantity;
+        await product.save();
+      }
+
+      await Cart.findByIdAndDelete(cartId);
+
+      return res.status(201).json({
+        success: true,
+        orderId: newlyCreatedOrder._id,
+      });
+    }
+
     const create_payment_json = {
       intent: "sale",
       payer: {

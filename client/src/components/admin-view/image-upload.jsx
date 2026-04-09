@@ -1,18 +1,15 @@
-import { FileIcon, UploadCloudIcon, XIcon } from "lucide-react";
+import { UploadCloudIcon, XIcon, Image as ImageIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Button } from "../ui/button";
 import { useUploadThing } from "@/helpers/uploadthing";
 import { Skeleton } from "../ui/skeleton";
 
-
 function ProductImageUpload({
-  imageFile,
-  setImageFile,
   imageLoadingState,
-  uploadedImageUrl,
-  setUploadedImageUrl,
+  uploadedImageUrls = [],
+  setUploadedImageUrls,
   setImageLoadingState,
   isEditMode,
   isCustomStyling = false,
@@ -21,9 +18,9 @@ function ProductImageUpload({
   
   const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
-      console.log("Upload complete", res);
       if (res && res.length > 0) {
-        setUploadedImageUrl(res[0].url);
+        const urls = res.map(r => r.url);
+        setUploadedImageUrls((prev) => [...(prev || []), ...urls].slice(0, 4));
         setImageLoadingState(false);
       }
     },
@@ -33,9 +30,11 @@ function ProductImageUpload({
     },
   });
 
-  function handleImageFileChange(event) {
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) setImageFile(selectedFile);
+  async function handleImageFileChange(event) {
+    const selectedFiles = Array.from(event.target.files || []);
+    if (selectedFiles.length) {
+       handleUpload(selectedFiles);
+    }
   }
 
   function handleDragOver(event) {
@@ -44,35 +43,29 @@ function ProductImageUpload({
 
   function handleDrop(event) {
     event.preventDefault();
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
-  }
-
-  function handleRemoveImage() {
-    setImageFile(null);
-    if (inputRef.current) {
-      inputRef.current.value = "";
+    const droppedFiles = Array.from(event.dataTransfer.files || []);
+    if (droppedFiles.length) {
+       handleUpload(droppedFiles);
     }
   }
 
-  async function handleUpload() {
-    if (imageFile) {
+  function handleRemoveImage(index) {
+    setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  async function handleUpload(files) {
+    const availableSlots = 4 - (uploadedImageUrls?.length || 0);
+    const filesToUpload = files.slice(0, availableSlots);
+    if (filesToUpload.length > 0) {
       setImageLoadingState(true);
-      await startUpload([imageFile]);
+      await startUpload(filesToUpload);
     }
+    if (inputRef.current) inputRef.current.value = "";
   }
-
-  useEffect(() => {
-    if (imageFile !== null) handleUpload();
-  }, [imageFile]);
-
-
 
   return (
-    <div
-      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
-    >
-      <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
+    <div className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+      <Label className="text-lg font-semibold mb-2 block">Upload Images (Max 4)</Label>
       <div
         onDragOver={handleDragOver}
         onDrop={handleDrop}
@@ -83,38 +76,49 @@ function ProductImageUpload({
         <Input
           id="image-upload"
           type="file"
+          multiple
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode}
+          disabled={isEditMode || (uploadedImageUrls?.length || 0) >= 4}
         />
-        {!imageFile ? (
+        
+        {(uploadedImageUrls?.length || 0) < 4 ? (
           <Label
             htmlFor="image-upload"
             className={`${
               isEditMode ? "cursor-not-allowed" : ""
-            } flex flex-col items-center justify-center h-32 cursor-pointer`}
+            } flex flex-col items-center justify-center h-32 cursor-pointer mb-4`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
-            <span>Drag & drop or click to upload image</span>
+            <span>Drag & drop or click to upload ({4 - (uploadedImageUrls?.length || 0)} remaining)</span>
           </Label>
-        ) : imageLoadingState ? (
-          <Skeleton className="h-10 bg-gray-100" />
-        ) : (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <FileIcon className="w-8 text-primary mr-2 h-8" />
-            </div>
-            <p className="text-sm font-medium">{imageFile.name}</p>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground"
-              onClick={handleRemoveImage}
-            >
-              <XIcon className="w-4 h-4" />
-              <span className="sr-only">Remove File</span>
-            </Button>
+        ) : null}
+
+        {imageLoadingState && (
+          <Skeleton className="h-10 bg-gray-100 mb-4" />
+        )}
+
+        {uploadedImageUrls && uploadedImageUrls.length > 0 && (
+          <div className="space-y-2">
+            {uploadedImageUrls.map((url, index) => (
+               <div key={index} className="flex items-center justify-between border border-zinc-200 p-2 rounded-md">
+                 <div className="flex items-center gap-3">
+                   <img src={url} className="w-10 h-10 object-cover rounded shadow-sm" alt={`Uploaded ${index}`} />
+                   <p className="text-sm font-medium text-zinc-600">Image {index + 1}</p>
+                 </div>
+                 <Button
+                   variant="ghost"
+                   size="icon"
+                   type="button"
+                   className="text-muted-foreground hover:text-foreground hover:bg-zinc-100"
+                   onClick={() => handleRemoveImage(index)}
+                 >
+                   <XIcon className="w-4 h-4" />
+                   <span className="sr-only">Remove File</span>
+                 </Button>
+               </div>
+            ))}
           </div>
         )}
       </div>

@@ -5,8 +5,9 @@ import UserCartItemsContent from "@/components/shopping-view/cart-items-content"
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { CheckCircleIcon } from "lucide-react";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -14,7 +15,10 @@ function ShoppingCheckout() {
   const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("paypal");
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   const totalCartAmount =
@@ -30,13 +34,12 @@ function ShoppingCheckout() {
         )
       : 0;
 
-  function handleInitiatePaypalPayment() {
+  function handleInitiatePayment() {
     if (cartItems.length === 0) {
       toast({
         title: "Your bag is empty. Please add items to proceed",
         variant: "destructive",
       });
-
       return;
     }
     if (currentSelectedAddress === null) {
@@ -44,7 +47,6 @@ function ShoppingCheckout() {
         title: "Please select one address to proceed.",
         variant: "destructive",
       });
-
       return;
     }
 
@@ -69,8 +71,8 @@ function ShoppingCheckout() {
         phone: currentSelectedAddress?.phone,
         notes: currentSelectedAddress?.notes,
       },
-      orderStatus: "pending",
-      paymentMethod: "paypal",
+      orderStatus: paymentMethod === "cod" ? "confirmed" : "pending",
+      paymentMethod: paymentMethod,
       paymentStatus: "pending",
       totalAmount: totalCartAmount,
       orderDate: new Date(),
@@ -81,7 +83,14 @@ function ShoppingCheckout() {
 
     dispatch(createNewOrder(orderData)).then((data) => {
       if (data?.payload?.success) {
-        setIsPaymemntStart(true);
+        if (paymentMethod === "cod") {
+          setIsOrderPlaced(true);
+          setTimeout(() => {
+            navigate("/shop/payment-success");
+          }, 2500);
+        } else {
+          setIsPaymemntStart(true);
+        }
       } else {
         setIsPaymemntStart(false);
       }
@@ -118,7 +127,34 @@ function ShoppingCheckout() {
                 : <p className="text-zinc-500 text-center py-4">Your bag is empty.</p>}
             </div>
             
+            
             <div className="mt-8 space-y-4 border-t border-zinc-200 pt-6">
+              <div className="flex flex-col gap-3 mb-6">
+                <span className="font-semibold uppercase tracking-wider text-sm text-zinc-600">Payment Method</span>
+                <label className="flex items-center gap-3 cursor-pointer p-3 border border-zinc-200 hover:border-black transition-colors">
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="paypal" 
+                    checked={paymentMethod === "paypal"} 
+                    onChange={() => setPaymentMethod("paypal")} 
+                    className="accent-black w-4 h-4"
+                  />
+                  <span>Online Payment (Paypal)</span>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer p-3 border border-zinc-200 hover:border-black transition-colors">
+                  <input 
+                    type="radio" 
+                    name="paymentMethod" 
+                    value="cod" 
+                    checked={paymentMethod === "cod"} 
+                    onChange={() => setPaymentMethod("cod")} 
+                    className="accent-black w-4 h-4"
+                  />
+                  <span>Cash on Delivery (COD)</span>
+                </label>
+              </div>
+
               <div className="flex justify-between items-center text-lg">
                 <span className="font-semibold uppercase tracking-wider text-sm text-zinc-600">Subtotal</span>
                 <span className="font-bold text-black">${totalCartAmount.toFixed(2)}</span>
@@ -127,17 +163,27 @@ function ShoppingCheckout() {
             
             <div className="mt-6 w-full">
               <Button 
-                onClick={handleInitiatePaypalPayment} 
+                onClick={handleInitiatePayment} 
                 className="w-full bg-black text-white hover:bg-zinc-800 rounded-none uppercase tracking-widest py-6 text-sm"
               >
                 {isPaymentStart
-                  ? "Processing Paypal Payment..."
-                  : "Checkout safely with Paypal"}
+                  ? "Processing Paypal Transaction..."
+                  : `Checkout with ${paymentMethod === "cod" ? "COD" : "Paypal"}`}
               </Button>
             </div>
           </div>
         </div>
       </div>
+
+      {isOrderPlaced && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="flex flex-col items-center gap-4 animate-in zoom-in-50 duration-500 delay-150">
+            <CheckCircleIcon className="w-24 h-24 text-green-500" strokeWidth={1.5} />
+            <h2 className="text-3xl font-serif font-bold text-zinc-900 tracking-tight">Order Placed Successfully!</h2>
+            <p className="text-zinc-500 text-lg">Redirecting you...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
