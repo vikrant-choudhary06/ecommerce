@@ -47,7 +47,7 @@ function ShoppingProductTile({
 
   return (
     <Card className="w-full max-w-sm mx-auto border-none shadow-none group bg-background">
-      <div 
+      <div
         onClick={() => navigate(`/shop/product/${product?._id}`)}
         className="cursor-pointer"
       >
@@ -94,15 +94,14 @@ function ShoppingProductTile({
           </div>
           <div className="flex justify-center items-center mb-4 space-x-3">
             <span
-              className={`${
-                product?.salePrice > 0 ? "line-through text-muted-foreground" : "text-foreground"
-              } text-lg font-medium`}
+              className={`${product?.salePrice > 0 ? "line-through text-muted-foreground" : "text-foreground"
+                } text-lg font-medium`}
             >
-              ${product?.price}
+              ₹{product?.price}
             </span>
             {product?.salePrice > 0 ? (
               <span className="text-lg font-medium text-red-600">
-                ${product?.salePrice}
+                ₹{product?.salePrice}
               </span>
             ) : null}
           </div>
@@ -116,7 +115,7 @@ function ShoppingProductTile({
         ) : (
           <Button
             onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
-            className="w-full uppercase tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-colors rounded-none"
+            className="w-full uppercase tracking-wide bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white transition-colors rounded-none font-bold py-6"
           >
             Add to Bag
           </Button>

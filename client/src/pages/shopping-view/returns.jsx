@@ -11,8 +11,8 @@ function ShippingAndReturns() {
         
         <div className="bg-muted rounded-lg p-6 my-6">
           <ul className="space-y-3 mb-0">
-            <li><strong>Standard Shipping (3-5 business days):</strong> $5.99 (Free on orders over $100)</li>
-            <li><strong>Express Shipping (1-2 business days):</strong> $14.99</li>
+            <li><strong>Standard Shipping (3-5 business days):</strong> ₹99 (Free on orders over ₹1000)</li>
+            <li><strong>Express Shipping (1-2 business days):</strong> ₹299</li>
             <li><strong>International Shipping (7-14 business days):</strong> Calculated at checkout based on destination</li>
           </ul>
         </div>
@@ -37,7 +37,7 @@ function ShippingAndReturns() {
         </ol>
         
         <div className="bg-muted/50 p-4 rounded mt-6 border-l-4 border-primary">
-          <p className="text-sm font-medium m-0">Please note: A return shipping fee of $6.00 will be deducted from your refund amount. Original shipping costs are non-refundable.</p>
+          <p className="text-sm font-medium m-0">Please note: A return shipping fee of ₹100 will be deducted from your refund amount. Original shipping costs are non-refundable.</p>
         </div>
       </section>
     </div>

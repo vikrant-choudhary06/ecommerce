@@ -1,10 +1,9 @@
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { Badge } from "../ui/badge";
 import { DialogContent } from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
-import { FileDown } from "lucide-react";
+import { FileDown, Check, Circle, ShoppingBag } from "lucide-react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -17,7 +16,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
     // Add branding
     doc.setFont("helvetica", "bold");
     doc.setFontSize(24);
-    doc.text("BRAND LIFE STORE", 14, 25);
+    doc.text("BRAND STORE", 14, 25);
     
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
@@ -56,8 +55,8 @@ function ShoppingOrderDetailsView({ orderDetails }) {
     const tableData = orderDetails?.cartItems.map(item => [
       item.title,
       item.quantity,
-      `$${item.price.toFixed(2)}`,
-      `$${(item.price * item.quantity).toFixed(2)}`
+      `INR ${Number(item.price).toFixed(2)}`,
+      `INR ${(Number(item.price) * item.quantity).toFixed(2)}`
     ]);
 
     doc.autoTable({
@@ -86,164 +85,202 @@ function ShoppingOrderDetailsView({ orderDetails }) {
     doc.setTextColor(0);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text(`GRAND TOTAL: $${orderDetails?.totalAmount.toFixed(2)}`, 140, finalY + 5);
+    doc.text(`GRAND TOTAL: INR ${Number(orderDetails?.totalAmount).toFixed(2)}`, 140, finalY + 5);
 
     // Footer
     doc.setFontSize(9);
     doc.setFont("helvetica", "italic");
     doc.setTextColor(150);
-    doc.text("Thank you for choosing Brand Life Store. If you have any questions about this invoice,", 14, 280);
+    doc.text("Thank you for choosing Brand Store. If you have any questions about this invoice,", 14, 280);
     doc.text("please contact our support team at support@brandlife.com", 14, 285);
 
     doc.save(`BrandLife_Invoice_${orderDetails?._id.slice(-6)}.pdf`);
   }
 
   return (
-    <DialogContent className="sm:max-w-[600px]">
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <div className="flex mt-6 items-center justify-between">
-            <p className="font-medium">Order ID</p>
-            <div className="flex items-center gap-2">
-                <Label>{orderDetails?._id}</Label>
-                <Button onClick={handleDownloadInvoice} variant="outline" size="icon" className="h-8 w-8 rounded-full border-primary/20 hover:bg-primary/10">
-                    <FileDown className="h-4 w-4" />
+    <DialogContent className="sm:max-w-[700px] p-0 overflow-hidden border-none bg-background/95 backdrop-blur-2xl">
+      <div className="max-h-[90vh] overflow-y-auto custom-scrollbar">
+        {/* HEADER SECTION - BOUTIQUE BLACK */}
+        <div className="relative h-40 bg-[#09090b] flex items-end p-8 overflow-hidden border-b border-white/10">
+            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                 <ShoppingBag size={180} className="text-white" />
+            </div>
+            <div className="flex justify-between items-end w-full relative z-10">
+                <div className="space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-primary/80">Digital Receipt</span>
+                    <h2 className="text-4xl font-serif font-bold text-white italic tracking-tighter">Order Summary</h2>
+                    <p className="text-[10px] uppercase tracking-[0.4em] text-white/40 font-bold">Transaction Ref: #{orderDetails?._id.slice(-8).toUpperCase()}</p>
+                </div>
+                <Button 
+                    onClick={handleDownloadInvoice} 
+                    className="bg-white hover:bg-zinc-200 text-black rounded-none px-8 h-12 text-[10px] uppercase tracking-widest font-bold shadow-xl transition-all duration-300"
+                >
+                    <FileDown className="mr-2 h-4 w-4" />
+                    Archive PDF
                 </Button>
             </div>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Date</p>
-            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Price</p>
-            <Label>${orderDetails?.totalAmount}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment method</p>
-            <Label>{orderDetails?.paymentMethod}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment Status</p>
-            <Label>{orderDetails?.paymentStatus}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Order Status</p>
-            <Label>
-              <Badge
-                className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                }`}
-              >
-                {orderDetails?.orderStatus}
-              </Badge>
-            </Label>
-          </div>
-          </div>
-        
-        {/* ORDER TRACKING BAR */}
-        <div className="my-6">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Tracking Timeline</h3>
-          </div>
-          <div className="relative flex justify-between items-center w-full mt-8 mb-12">
-            {/* The Line */}
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-muted -translate-y-1/2 z-0" />
-            
-            {/* Steps */}
-            {[
-              { id: "pending", label: "In Process" },
-              { id: "shipped", label: "Shipped" },
-              { id: "outForDelivery", label: "Out for Delivery" },
-              { id: "delivered", label: "Delivered" }
-            ].map((step, index, array) => {
-              const statusOrder = ["pending", "confirmed", "shipped", "outForDelivery", "delivered"];
-              // Map 'confirmed' to same level as 'pending' or slightly higher
-              const currentStatus = orderDetails?.orderStatus;
-              let currentIndex = statusOrder.indexOf(currentStatus);
-              if(currentStatus === 'confirmed') currentIndex = 0; // Treatment as first step success
-              
-              const stepIndex = ["pending", "shipped", "outForDelivery", "delivered"].indexOf(step.id);
-              const isCompleted = currentIndex >= ["pending", "shipped", "outForDelivery", "delivered"].indexOf(step.id);
-              const isCurrent = currentStatus === step.id || (currentStatus === 'confirmed' && step.id === 'pending');
-
-              return (
-                <div key={step.id} className="relative z-10 flex flex-col items-center">
-                  <div 
-                    className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all duration-500 ${
-                      isCompleted 
-                        ? "bg-primary border-primary text-primary-foreground scale-110 shadow-lg" 
-                        : "bg-background border-muted text-muted-foreground"
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    ) : (
-                      <span className="text-[8px] font-bold">{index + 1}</span>
-                    )}
-                  </div>
-                  <span className={`absolute -bottom-8 whitespace-nowrap text-[10px] font-bold uppercase tracking-tighter transition-colors duration-300 ${isCompleted ? "text-primary" : "text-muted-foreground"}`}>
-                    {step.label}
-                  </span>
-                  {isCurrent && (
-                    <div className="absolute -top-6 animate-bounce">
-                       <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
         </div>
 
-        <Separator />
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <div className="font-medium">Order Details</div>
-            <ul className="grid gap-3">
-              {orderDetails?.cartItems && orderDetails?.cartItems.length > 0
-                ? orderDetails?.cartItems.map((item) => (
-                    <li key={item.productId} className="flex items-center justify-between border-b border-border/10 py-2 last:border-0">
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-bold uppercase tracking-widest">{item.title}</span>
-                        {(item.color || item.size) && (
-                           <span className="text-[9px] text-muted-foreground uppercase font-bold">
-                              {item.color} {item.size ? `/ ${item.size}` : ""}
-                           </span>
+        <div className="p-8 space-y-12 bg-[#0c0c0e]">
+            {/* QUICK INFO GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                    { label: 'Purchased On', value: orderDetails?.orderDate.split("T")[0] },
+                    { label: 'Amount Paid', value: `₹${Number(orderDetails?.totalAmount).toLocaleString()}` },
+                    { label: 'Payment Method', value: orderDetails?.paymentMethod },
+                    { label: 'Order Status', value: orderDetails?.orderStatus, isBadge: true },
+                ].map((info, idx) => (
+                    <div key={idx} className="space-y-1.5 p-5 bg-[#141417] border border-white/5">
+                        <span className="text-[9px] uppercase tracking-widest font-bold text-zinc-500 block">{info.label}</span>
+                        {info.isBadge ? (
+                            <div className="pt-1">
+                                <Badge className={`rounded-none text-[9px] uppercase tracking-widest font-black px-3 py-1 ${
+                                    orderDetails?.orderStatus === 'delivered' ? 'bg-blue-600' : 'bg-primary text-primary-foreground'
+                                }`}>
+                                    {info.value}
+                                </Badge>
+                            </div>
+                        ) : (
+                            <span className="text-sm font-bold text-zinc-200 uppercase tracking-tight">{info.value}</span>
                         )}
-                      </div>
-                      <div className="flex gap-4 text-xs font-bold font-serif whitespace-nowrap">
-                        <span>x{item.quantity}</span>
-                        <span>${item.price}</span>
-                      </div>
-                    </li>
-                  ))
-                : null}
-            </ul>
-          </div>
-        </div>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <div className="font-medium">Shipping Info</div>
-            <div className="grid gap-0.5 text-muted-foreground">
-              <span>{user.userName}</span>
-              <span>{orderDetails?.addressInfo?.address}</span>
-              <span>{orderDetails?.addressInfo?.city}</span>
-              <span>{orderDetails?.addressInfo?.pincode}</span>
-              <span>{orderDetails?.addressInfo?.phone}</span>
-              <span>{orderDetails?.addressInfo?.notes}</span>
+                    </div>
+                ))}
             </div>
-          </div>
+
+            {/* LIVE JOURNEY */}
+            <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <span className="h-[1px] flex-1 bg-border" />
+                    <h3 className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground">Tracking Timeline</h3>
+                    <span className="h-[1px] flex-1 bg-border" />
+                </div>
+                
+                <div className="relative flex justify-between items-center w-full px-4 pt-4">
+                    <div className="absolute top-[13px] left-0 w-full h-[1px] bg-border z-0" />
+                    {[
+                        { id: "pending", label: "Processing" },
+                        { id: "shipped", label: "Dispatched" },
+                        { id: "outForDelivery", label: "Out For Delivery" },
+                        { id: "delivered", label: "Delivered" }
+                    ].map((step) => {
+                        const statusOrder = ["pending", "confirmed", "shipped", "outForDelivery", "delivered"];
+                        const currentStatus = orderDetails?.orderStatus;
+                        let currentIndex = statusOrder.indexOf(currentStatus);
+                        if(currentStatus === 'confirmed') currentIndex = 0; 
+                        
+                        const isCompleted = currentIndex >= statusOrder.indexOf(step.id === 'pending' ? 'pending' : step.id);
+                        const isCurrent = currentStatus === step.id || (currentStatus === 'confirmed' && step.id === 'pending');
+
+                        return (
+                            <div key={step.id} className="relative z-10 flex flex-col items-center group">
+                                <div className={`w-7 h-7 rounded-full flex items-center justify-center border transition-all duration-700 ${
+                                    isCompleted ? "bg-primary border-primary text-white shadow-xl scale-110" : "bg-background border-border text-muted-foreground"
+                                }`}>
+                                    {isCompleted ? <Check size={14} strokeWidth={3} /> : <Circle size={8} className="fill-current" />}
+                                </div>
+                                <span className={`absolute -bottom-8 whitespace-nowrap text-[9px] font-bold uppercase tracking-widest transition-all duration-500 ${
+                                    isCompleted ? "text-primary opacity-100" : "text-muted-foreground opacity-40"
+                                }`}>
+                                    {step.label}
+                                </span>
+                                {isCurrent && (
+                                    <div className="absolute -top-6">
+                                        <div className="w-1.5 h-1.5 bg-primary rounded-full animate-ping" />
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+
+            {/* ITEM LIST */}
+            <div className="space-y-6 pt-8">
+                <h3 className="text-xl font-serif font-bold italic tracking-tight border-b border-border pb-4">Acquired Items</h3>
+                <div className="space-y-4">
+                    {orderDetails?.cartItems?.map((item) => (
+                        <div key={item.productId} className="flex items-center gap-6 group">
+                            <div className="w-20 h-24 shrink-0 bg-muted overflow-hidden">
+                                <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            </div>
+                            <div className="flex-1 space-y-1">
+                                <h4 className="text-sm font-bold uppercase tracking-widest leading-none">{item.title}</h4>
+                                <div className="flex gap-2">
+                                    {item.size && <span className="text-[10px] text-muted-foreground font-bold uppercase">Size: {item.size}</span>}
+                                    {item.color && <span className="text-[10px] text-muted-foreground font-bold uppercase">Color: {item.color}</span>}
+                                </div>
+                                <div className="pt-2 flex items-center gap-4">
+                                     <span className="text-[10px] font-bold py-1 px-2 bg-muted rounded">QTY: {item.quantity}</span>
+                                     <span className="text-sm font-bold tracking-tight">₹{Number(item.price).toLocaleString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* SHIPPING & NOTES */}
+            <div className="grid md:grid-cols-2 gap-12 pt-8 border-t border-border/50">
+                <div className="space-y-4">
+                    <h4 className="text-[10px] font-bold uppercase tracking-[.3em] text-muted-foreground">Shipping Destination</h4>
+                    <div className="space-y-1">
+                        <p className="text-sm font-bold">{user.userName}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                            {orderDetails?.addressInfo?.address}<br/>
+                            {orderDetails?.addressInfo?.city}, {orderDetails?.addressInfo?.pincode}<br/>
+                            {orderDetails?.addressInfo?.phone}
+                        </p>
+                    </div>
+                </div>
+                {orderDetails?.addressInfo?.notes && (
+                    <div className="space-y-4">
+                        <h4 className="text-[10px] font-bold uppercase tracking-[.3em] text-muted-foreground">Order Memo</h4>
+                        <div className="p-4 bg-muted/40 italic text-xs text-muted-foreground border-l-2 border-primary">
+                            &quot;{orderDetails?.addressInfo?.notes}&quot;
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* FINAL TOTAL */}
+            <div className="pt-8 flex flex-col items-end gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[.4em] text-muted-foreground">Total Commitment</span>
+                <div className="text-4xl font-serif font-bold italic tracking-tighter">
+                    ₹{Number(orderDetails?.totalAmount).toLocaleString()}
+                </div>
+            </div>
         </div>
       </div>
     </DialogContent>
   );
 }
+
+ShoppingOrderDetailsView.propTypes = {
+  orderDetails: PropTypes.shape({
+    _id: PropTypes.string,
+    orderDate: PropTypes.string,
+    orderUpdateDate: PropTypes.string,
+    totalAmount: PropTypes.number,
+    paymentMethod: PropTypes.string,
+    paymentStatus: PropTypes.string,
+    orderStatus: PropTypes.string,
+    trackingId: PropTypes.string,
+    addressInfo: PropTypes.shape({
+        address: PropTypes.string,
+        city: PropTypes.string,
+        pincode: PropTypes.string,
+        phone: PropTypes.string,
+        notes: PropTypes.string
+    }),
+    cartItems: PropTypes.arrayOf(PropTypes.shape({
+        productId: PropTypes.string,
+        title: PropTypes.string,
+        price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        quantity: PropTypes.number,
+        color: PropTypes.string,
+        size: PropTypes.string
+    }))
+  })
+};
 
 export default ShoppingOrderDetailsView;

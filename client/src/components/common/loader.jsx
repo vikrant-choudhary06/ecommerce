@@ -17,7 +17,7 @@ const Loader = () => {
         {/* Text Animation */}
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-2xl md:text-4xl font-serif font-bold tracking-[0.3em] text-primary animate-title-fade">
-            BRAND LIFE STORE
+            BRAND STORE
           </h1>
           <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground opacity-60 animate-in fade-in slide-in-from-top-1 duration-1000 delay-500">
             Premium Fashion Destination

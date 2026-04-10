@@ -6,7 +6,9 @@ import { Label } from "../ui/label";
 import { useToast } from "../ui/use-toast";
 import { updateProfile, updatePassword } from "@/store/auth-slice";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "../ui/card";
-import { User, Lock, Mail, ShieldCheck } from "lucide-react";
+import { User, Lock, Mail, ShieldCheck, Camera, Loader2 } from "lucide-react";
+import { useUploadThing } from "@/helpers/uploadthing";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 function UserProfile() {
   const { user } = useSelector((state) => state.auth);
@@ -20,6 +22,9 @@ function UserProfile() {
     newPassword: "",
     confirmNewPassword: "",
   });
+  
+  const [imageLoading, setImageLoading] = useState(false);
+  const [uploadedImageUrl, setUploadedImageUrl] = useState(user?.image || "");
 
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -30,6 +35,7 @@ function UserProfile() {
       updateProfile({
         userId: user?.id,
         ...profileFormData,
+        image: uploadedImageUrl
       })
     ).then((data) => {
       if (data?.payload?.success) {
@@ -43,6 +49,33 @@ function UserProfile() {
         });
       }
     });
+  }
+
+  const { startUpload } = useUploadThing("imageUploader", {
+    onClientUploadComplete: (res) => {
+      setImageLoading(false);
+      if (res && res.length > 0) {
+        setUploadedImageUrl(res[0].url);
+        toast({
+          title: "Avatar uploaded! Save profile to confirm."
+        })
+      }
+    },
+    onUploadError: () => {
+      setImageLoading(false);
+      toast({
+        title: "Upload failed",
+        variant: "destructive",
+      });
+    },
+  });
+
+  async function handleImageFileChange(event) {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImageLoading(true);
+      await startUpload([file]);
+    }
   }
 
   function handlePasswordUpdate(e) {
@@ -84,14 +117,43 @@ function UserProfile() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* PROFILE INFO */}
       <Card className="border-none shadow-none bg-muted/30">
-        <CardHeader>
-          <div className="flex items-center gap-3 mb-2">
-             <div className="p-2 bg-primary/10 rounded-lg text-primary">
+        <CardHeader className="flex flex-col items-center">
+            <div className="relative group mb-6">
+                <Avatar className="w-32 h-32 border-4 border-primary/20 transition-all duration-500 group-hover:border-primary/40 shadow-xl overflow-hidden">
+                    <AvatarImage src={uploadedImageUrl} className="object-cover" />
+                    <AvatarFallback className="bg-muted text-2xl font-serif font-bold italic">
+                        {user?.userName[0].toUpperCase()}
+                    </AvatarFallback>
+                </Avatar>
+                
+                {imageLoading ? (
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] rounded-full flex items-center justify-center">
+                        <Loader2 className="w-8 h-8 text-white animate-spin" />
+                    </div>
+                ) : (
+                    <Label 
+                        htmlFor="avatar-upload"
+                        className="absolute bottom-1 right-1 p-2 bg-primary text-primary-foreground rounded-full cursor-pointer shadow-lg transform transition-transform group-hover:scale-110"
+                    >
+                        <Camera size={16} />
+                        <Input 
+                            id="avatar-upload" 
+                            type="file" 
+                            accept="image/*"
+                            className="hidden" 
+                            onChange={handleImageFileChange}
+                        />
+                    </Label>
+                )}
+            </div>
+
+          <div className="flex items-center gap-3 mb-2 text-center flex-col">
+             <div className="p-2 bg-primary/10 rounded-lg text-primary self-center">
                 <User size={20} />
              </div>
              <CardTitle className="text-xl font-serif">Public Identity</CardTitle>
           </div>
-          <CardDescription className="text-xs uppercase tracking-widest font-bold">Manage your basic profile details.</CardDescription>
+          <CardDescription className="text-xs uppercase tracking-widest font-bold text-center">Customize how you appear in the sanctuary.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleProfileUpdate} className="space-y-6">

@@ -63,6 +63,7 @@ const loginUser = async (req, res) => {
         role: checkUser.role,
         email: checkUser.email,
         userName: checkUser.userName,
+        image: checkUser.image,
       },
       process.env.JWT_SECRET || "CLIENT_SECRET_KEY",
       { expiresIn: "60m" }
@@ -76,6 +77,7 @@ const loginUser = async (req, res) => {
         role: checkUser.role,
         id: checkUser._id,
         userName: checkUser.userName,
+        image: checkUser.image,
       },
     });
   } catch (e) {
@@ -141,6 +143,7 @@ const updateProfile = async (req, res) => {
 
     user.userName = userName || user.userName;
     user.email = email || user.email;
+    user.image = req.body.image || user.image;
 
     await user.save();
 
@@ -151,6 +154,7 @@ const updateProfile = async (req, res) => {
         role: user.role,
         email: user.email,
         userName: user.userName,
+        image: user.image,
       },
       process.env.JWT_SECRET || "CLIENT_SECRET_KEY",
       { expiresIn: "60m" }
@@ -164,6 +168,7 @@ const updateProfile = async (req, res) => {
         role: user.role,
         id: user._id,
         userName: user.userName,
+        image: user.image,
       },
     });
   } catch (e) {

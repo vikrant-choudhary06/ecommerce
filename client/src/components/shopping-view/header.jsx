@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 function MenuItems() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   function handleNavigate(getCurrentMenuItem) {
     sessionStorage.removeItem("filters");
@@ -139,6 +139,7 @@ function HeaderRightContent() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="bg-transparent border border-border cursor-pointer hover:bg-muted transition-colors w-9 h-9">
+              <AvatarImage src={user?.image} className="object-cover" />
               <AvatarFallback className="bg-transparent text-foreground font-semibold text-xs">
                 {user?.userName ? user.userName[0].toUpperCase() : "U"}
               </AvatarFallback>
@@ -172,7 +173,6 @@ function HeaderRightContent() {
 }
 
 function ShoppingHeader() {
-  const { isAuthenticated } = useSelector((state) => state.auth);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -198,9 +198,9 @@ function ShoppingHeader() {
     <header className={`sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
       <div className="flex h-20 items-center justify-between px-4 md:px-8">
         <div className="flex items-center lg:w-1/4">
-          <Link to="/shop/home" className="flex flex-col items-center gap-0">
-            <span className="font-serif font-bold text-2xl tracking-tighter leading-none">BL</span>
-            <span className="font-sans font-bold text-[10px] uppercase tracking-widest mt-1">Brand Life Store</span>
+          <Link to="/shop/home" className="flex flex-col group">
+            <span className="font-serif font-bold text-2xl tracking-[.15em] leading-tight group-hover:tracking-[.25em] transition-all duration-700">BRAND</span>
+            <span className="font-sans font-bold text-[8px] uppercase tracking-[.8em] mt-[-2px] text-muted-foreground ml-0.5">STORE</span>
           </Link>
         </div>
         

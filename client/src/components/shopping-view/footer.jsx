@@ -26,7 +26,7 @@ function ShoppingFooter() {
           <div className="lg:col-span-4 flex flex-col space-y-8">
             <Link to="/shop/home" className="flex flex-col items-start gap-0 group">
               <span className="text-5xl font-bold tracking-[ -0.05em] leading-none font-serif italic text-white group-hover:text-primary transition-colors duration-500">BL</span>
-              <span className="text-[10px] font-bold tracking-[0.5em] uppercase font-sans mt-2 opacity-60">Brand Life Store</span>
+              <span className="text-[10px] font-bold tracking-[0.5em] uppercase font-sans mt-2 opacity-60">Brand Store</span>
             </Link>
             <p className="text-zinc-400 text-sm leading-relaxed max-w-sm font-light">
               Designing the future of everyday luxury. Our collections are crafted with precision, blending timeless ethics with contemporary silhouettes.
@@ -98,7 +98,7 @@ function ShoppingFooter() {
 
         <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
           <p className="text-zinc-500 text-[9px] uppercase tracking-[0.4em] font-bold">
-            &copy; {new Date().getFullYear()} Brand Life Store &mdash; ALL RIGHTS RESERVED
+            &copy; {new Date().getFullYear()} Brand Store &mdash; ALL RIGHTS RESERVED
           </p>
           <div className="flex space-x-8 text-zinc-500 text-[9px] uppercase tracking-[0.3em] font-bold">
             <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">Privacy Policy</a>

@@ -61,7 +61,7 @@ function ShoppingCheckout() {
         setIsCouponApplied(true);
         toast({
           title: "Coupon applied successfully!",
-          description: `You saved $${discountAmount.toFixed(2)}`,
+          description: `You saved ₹${discountAmount.toFixed(2)}`,
         });
       } else {
         setIsCouponApplied(false);
@@ -157,7 +157,7 @@ function ShoppingCheckout() {
         <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-40" />
         <div className="relative z-10 text-center space-y-2">
             <h1 className="text-5xl font-serif text-foreground uppercase tracking-widest font-bold">Secure Checkout</h1>
-            <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground font-bold italic">Brand Life Store &copy; 2024</p>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground font-bold italic">Brand Store &copy; 2024</p>
         </div>
       </div>
       
@@ -270,24 +270,24 @@ function ShoppingCheckout() {
                 <div className="mt-8 space-y-4 border-t border-border/50 pt-8">
                     <div className="flex justify-between items-center">
                         <span className="uppercase tracking-widest text-[10px] font-bold text-muted-foreground">Original Total</span>
-                        <span className="font-bold text-sm text-foreground">${subTotal.toFixed(2)}</span>
+                        <span className="font-bold text-sm text-foreground">₹{subTotal.toFixed(2)}</span>
                     </div>
                     {isCouponApplied && (
                         <div className="flex justify-between items-center animate-in slide-in-from-right-2">
                             <span className="uppercase tracking-widest text-[10px] font-bold text-green-600">Promotion Applied</span>
-                            <span className="font-bold text-sm text-green-600">-${discountAmount.toFixed(2)}</span>
+                            <span className="font-bold text-sm text-green-600">-₹{discountAmount.toFixed(2)}</span>
                         </div>
                     )}
                     <div className="flex justify-between items-center text-lg pt-4 border-t border-border/10">
                         <span className="font-bold uppercase tracking-[.2em] text-xs">Final Payable</span>
-                        <span className="font-bold text-2xl tracking-tighter text-foreground">${finalTotal.toFixed(2)}</span>
+                        <span className="font-bold text-2xl tracking-tighter text-foreground">₹{finalTotal.toFixed(2)}</span>
                     </div>
                 </div>
                 
                 <div className="mt-10">
                     <Button 
                         onClick={handleInitiatePayment} 
-                        className="w-full bg-primary text-primary-foreground hover:bg-black rounded-none uppercase tracking-[.3em] py-8 text-[10px] font-bold shadow-2xl transition-all duration-500"
+                        className="w-full bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white rounded-none uppercase tracking-[.3em] py-8 text-[10px] font-bold shadow-2xl transition-all duration-500"
                     >
                         {isPaymentStart
                         ? "Connecting to Security Gate..."

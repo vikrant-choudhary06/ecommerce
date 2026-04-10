@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
 import { addNewCoupon, deleteCoupon, fetchAllCoupons } from "@/store/admin/coupon-slice";
-import { Trash2, Gift, Calendar, DollarSign, Percent } from "lucide-react";
+import { Trash2, Gift, Calendar, IndianRupee, Percent } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -72,7 +72,7 @@ function AdminCoupons() {
     <div className="flex flex-col gap-8 p-6 md:p-10 animate-in fade-in duration-700">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-serif font-bold tracking-tight uppercase">Promotions Manager</h1>
-        <p className="text-muted-foreground text-sm uppercase tracking-widest font-bold italic">Brand Life Store Exclusive Rewards</p>
+        <p className="text-muted-foreground text-sm uppercase tracking-widest font-bold italic">Brand Store Exclusive Rewards</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -114,7 +114,7 @@ function AdminCoupons() {
                          onClick={() => setFormData({...formData, discountType: 'fixed'})}
                          className={`flex items-center justify-center gap-2 h-12 border transition-all text-[10px] font-bold uppercase tracking-widest ${formData.discountType === 'fixed' ? 'bg-primary text-primary-foreground border-primary' : 'bg-transparent border-border hover:border-foreground'}`}
                     >
-                        <DollarSign className="w-3 h-3" /> Fixed
+                        <IndianRupee className="w-3 h-3" /> Fixed
                     </button>
                 </div>
               </div>
@@ -132,7 +132,7 @@ function AdminCoupons() {
                        required
                     />
                     <div className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50">
-                        {formData.discountType === 'percentage' ? <Percent className="w-3 h-3" /> : <DollarSign className="w-3 h-3" />}
+                        {formData.discountType === 'percentage' ? <Percent className="w-3 h-3" /> : <IndianRupee className="w-3 h-3" />}
                     </div>
                 </div>
               </div>
@@ -153,7 +153,7 @@ function AdminCoupons() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full rounded-none h-14 bg-primary text-primary-foreground hover:bg-black uppercase tracking-[.3em] font-bold text-[10px] transition-all duration-500 shadow-lg"
+                className="w-full rounded-none h-14 bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white uppercase tracking-[.3em] font-bold text-[10px] transition-all duration-500 shadow-lg"
                 disabled={isLoading}
               >
                 Issue Coupon
@@ -189,7 +189,7 @@ function AdminCoupons() {
                             <div className="flex flex-col gap-0.5">
                                 <span className="text-xs font-bold font-serif italic">
                                     {couponItem.discountAmount}
-                                    {couponItem.discountType === "percentage" ? "% OFF" : "$ OFF"}
+                                    {couponItem.discountType === "percentage" ? "% OFF" : "₹ OFF"}
                                 </span>
                                 <span className="text-[9px] uppercase tracking-tighter opacity-50 font-bold">{couponItem.discountType} Discount</span>
                             </div>

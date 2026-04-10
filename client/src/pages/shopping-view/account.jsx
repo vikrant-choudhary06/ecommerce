@@ -3,8 +3,9 @@ import accImg from "../../assets/account.jpg";
 import Address from "@/components/shopping-view/address";
 import ShoppingOrders from "@/components/shopping-view/orders";
 import UserProfile from "@/components/shopping-view/profile";
+import UserWishlist from "@/components/shopping-view/wishlist";
 import { useSelector } from "react-redux";
-import { MapPin, Package, ShieldCheck } from "lucide-react";
+import { MapPin, Package, ShieldCheck, Heart } from "lucide-react";
 
 function ShoppingAccount() {
   const { user } = useSelector((state) => state.auth);
@@ -19,7 +20,7 @@ function ShoppingAccount() {
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
             <div className="text-center space-y-2 animate-in fade-in zoom-in duration-700">
                <h1 className="text-4xl md:text-5xl font-serif text-white italic font-bold tracking-tighter">Your Sanctuary</h1>
-               <p className="text-white/70 text-[10px] md:text-sm uppercase tracking-[0.4em] font-bold">Refining your Brand Life experience</p>
+               <p className="text-white/70 text-[10px] md:text-sm uppercase tracking-[0.4em] font-bold">Refining your Brand Store experience</p>
             </div>
         </div>
       </div>
@@ -47,6 +48,7 @@ function ShoppingAccount() {
                     { id: 'orders', label: 'Order History', icon: Package },
                     { id: 'profile', label: 'Identity & Security', icon: ShieldCheck },
                     { id: 'address', label: 'Shipping Addresses', icon: MapPin },
+                    { id: 'wishlist', label: 'The Wishlist', icon: Heart },
                 ].map(tab => (
                     <TabsTrigger 
                         key={tab.id}
@@ -73,6 +75,10 @@ function ShoppingAccount() {
                 <div className="bg-muted/30 p-4 md:p-8 rounded-2xl">
                     <Address />
                 </div>
+              </TabsContent>
+              
+              <TabsContent value="wishlist" className="mt-0 focus-visible:outline-none">
+                 <UserWishlist />
               </TabsContent>
             </Tabs>
           </div>

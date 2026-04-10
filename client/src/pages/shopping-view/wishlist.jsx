@@ -116,10 +116,10 @@ function WishlistPage() {
                   </h3>
                   <div className="flex items-center gap-4 mb-8">
                     <span className={`${item.salePrice > 0 ? "line-through text-muted-foreground/60" : "text-foreground"} font-semibold text-lg`}>
-                      ${item.price}
+                      ₹{item.price}
                     </span>
                     {item.salePrice > 0 && (
-                      <span className="text-red-500 dark:text-red-400 font-bold tracking-tighter text-xl">${item.salePrice}</span>
+                      <span className="text-red-500 dark:text-red-400 font-bold tracking-tighter text-xl">₹{item.salePrice}</span>
                     )}
                   </div>
                 </CardContent>

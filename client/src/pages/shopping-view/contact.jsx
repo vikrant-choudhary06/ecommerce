@@ -3,7 +3,7 @@ function ContactUs() {
     <div className="container mx-auto px-4 py-16 max-w-4xl min-h-[60vh]">
       <h1 className="text-4xl font-serif font-bold mb-8">Contact Us</h1>
       <p className="text-muted-foreground mb-8 max-w-2xl text-lg">
-        We'd love to hear from you. Please fill out the form below or reach out to us at support@brandlifestore.com.
+        We'd love to hear from you. Please fill out the form below or reach out to us at support@brandstore.com.
       </p>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -28,8 +28,8 @@ function ContactUs() {
         <div className="space-y-8 bg-muted p-8 rounded-lg">
           <div>
             <h3 className="font-bold text-lg mb-2">Customer Service</h3>
-            <p className="text-muted-foreground">Email: support@brandlifestore.com</p>
-            <p className="text-muted-foreground">Phone: 1-800-BRAND-LIFE</p>
+            <p className="text-muted-foreground">Email: support@brandstore.com</p>
+            <p className="text-muted-foreground">Phone: 1-800-BRAND-STORE</p>
             <p className="text-muted-foreground">Hours: Mon-Fri 9am - 5pm EST</p>
           </div>
           <div>

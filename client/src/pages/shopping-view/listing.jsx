@@ -171,17 +171,17 @@ function ShoppingListing() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
           {isLoading
             ? Array.from({ length: 8 }).map((_, idx) => (
-                <ProductSkeleton key={idx} />
-              ))
+              <ProductSkeleton key={idx} />
+            ))
             : productList && productList.length > 0
-            ? productList.map((productItem) => (
+              ? productList.map((productItem) => (
                 <ShoppingProductTile
                   key={productItem._id}
                   product={productItem}
                   handleAddtoCart={handleAddtoCart}
                 />
               ))
-            : <div className="col-span-full py-12 text-center text-muted-foreground font-serif italic">No products found matching your criteria.</div>}
+              : <div className="col-span-full py-12 text-center text-muted-foreground font-serif italic">No products found matching your criteria.</div>}
         </div>
       </div>
     </div>

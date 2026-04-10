@@ -51,7 +51,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
         <div className="space-y-3">
             <div className="flex justify-between text-xs uppercase tracking-widest text-muted-foreground">
                 <span>Subtotal</span>
-                <span>${totalCartAmount.toFixed(2)}</span>
+                <span>₹{totalCartAmount.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-xs uppercase tracking-widest text-muted-foreground">
                 <span>Shipping</span>
@@ -60,7 +60,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
             <div className="pt-3 border-t border-border/50 flex justify-between items-center">
                 <span className="text-sm font-bold uppercase tracking-[0.2em]">Total Estimate</span>
                 <span className="text-2xl font-bold tracking-tighter">
-                    ${totalCartAmount.toFixed(2)}
+                    ₹{totalCartAmount.toFixed(2)}
                 </span>
             </div>
         </div>
@@ -70,7 +70,7 @@ function UserCartWrapper({ cartItems, setOpenCartSheet }) {
             navigate("/shop/checkout");
             setOpenCartSheet(false);
           }}
-          className="w-full group bg-primary text-primary-foreground hover:bg-black rounded-none py-8 text-xs font-bold uppercase tracking-[.3em] transition-all duration-300 shadow-xl"
+          className="w-full group bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white rounded-none py-8 text-xs font-bold uppercase tracking-[.3em] transition-all duration-300 shadow-xl"
           disabled={cartItems.length === 0}
         >
           Proceed to Checkout

@@ -263,7 +263,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               </Button>
             ) : (
               <Button
-                className="w-full h-14 bg-primary text-primary-foreground hover:bg-black rounded-none uppercase tracking-[0.2em] font-bold text-[10px] transition-all duration-300"
+                className="w-full h-14 bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white rounded-none uppercase tracking-[0.2em] font-bold text-[10px] transition-all duration-300"
                 onClick={() =>
                   handleAddToCart(
                     productDetails?._id,
@@ -365,7 +365,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               <Button
                 onClick={handleAddReview}
                 disabled={reviewMsg.trim() === "" || rating === 0}
-                className="bg-primary text-primary-foreground hover:bg-black rounded-none uppercase tracking-widest py-6 text-[10px] font-bold"
+                className="bg-primary text-primary-foreground hover:bg-zinc-900 hover:text-white rounded-none uppercase tracking-widest py-6 text-[10px] font-bold"
               >
                 Submit
               </Button>
