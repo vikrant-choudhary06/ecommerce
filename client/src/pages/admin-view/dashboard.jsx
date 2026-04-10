@@ -24,7 +24,12 @@ function AdminDashboard() {
         setImageFile(null);
         setUploadedImageUrls([]);
         toast({
-          title: "Banner added successfully",
+          title: "Banner published successfully",
+        });
+      } else {
+        toast({
+          title: data?.payload?.message || "Failed to publish banner",
+          variant: "destructive",
         });
       }
     });

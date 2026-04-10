@@ -1,4 +1,4 @@
-import { UploadCloudIcon, XIcon, Image as ImageIcon } from "lucide-react";
+import { UploadCloudIcon, XIcon } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useRef } from "react";
@@ -18,10 +18,10 @@ function ProductImageUpload({
   
   const { startUpload } = useUploadThing("imageUploader", {
     onClientUploadComplete: (res) => {
+      setImageLoadingState(false);
       if (res && res.length > 0) {
-        const urls = res.map(r => r.url);
+        const urls = res.map((r) => r.url);
         setUploadedImageUrls((prev) => [...(prev || []), ...urls].slice(0, 4));
-        setImageLoadingState(false);
       }
     },
     onUploadError: (error) => {
