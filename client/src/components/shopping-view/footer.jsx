@@ -13,72 +13,100 @@ function ShoppingFooter() {
   }
 
   return (
-    <footer className="bg-muted text-foreground py-16 px-4 md:px-8 border-t border-border">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-        <div className="flex flex-col space-y-4">
-          <Link to="/shop/home" className="flex flex-col items-start gap-0">
-            <span className="text-3xl font-bold tracking-tighter leading-none font-serif">BL</span>
-            <span className="text-xs font-bold tracking-widest uppercase font-sans mt-1">Brand Life Store</span>
-          </Link>
-          <p className="text-muted-foreground text-sm leading-relaxed mt-2">
-            Elevate your everyday style with our premium collection of ethically made, sustainably sourced men's clothing.
-          </p>
-          <div className="flex space-x-4 pt-4">
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Instagram className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Facebook className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Twitter className="w-5 h-5" />
-            </a>
-            <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-              <Youtube className="w-5 h-5" />
-            </a>
-          </div>
-        </div>
-
-        <div className="flex flex-col space-y-4">
-          <h4 className="font-semibold text-lg">Shop</h4>
-          <span onClick={() => handleNavigateToCategory("shirts")} className="text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">Shirts</span>
-          <span onClick={() => handleNavigateToCategory("pants")} className="text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">Pants & Jeans</span>
-          <span onClick={() => handleNavigateToCategory("outerwear")} className="text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">Outerwear</span>
-          <span onClick={() => handleNavigateToCategory("accessories")} className="text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">Accessories</span>
-          <span onClick={() => handleNavigateToCategory("footwear")} className="text-muted-foreground hover:text-foreground text-sm transition-colors cursor-pointer">Footwear</span>
-        </div>
-
-        <div className="flex flex-col space-y-4">
-          <h4 className="font-semibold text-lg">Support</h4>
-          <Link to="/shop/contact" className="text-muted-foreground hover:text-foreground text-sm transition-colors">Contact Us</Link>
-          <Link to="/shop/faq" className="text-muted-foreground hover:text-foreground text-sm transition-colors">FAQs</Link>
-          <Link to="/shop/returns" className="text-muted-foreground hover:text-foreground text-sm transition-colors">Shipping & Returns</Link>
-          <Link to="/shop/size-guide" className="text-muted-foreground hover:text-foreground text-sm transition-colors">Size Guide</Link>
-        </div>
-
-        <div className="flex flex-col space-y-4">
-          <h4 className="font-semibold text-lg">Stay in the Loop</h4>
-          <p className="text-muted-foreground text-sm">Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
-          <div className="flex items-center space-x-2 mt-2">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="bg-background border border-border focus:outline-none focus:ring-1 focus:ring-primary text-foreground px-4 py-2 rounded-md w-full text-sm"
-            />
-            <button className="bg-background text-foreground px-4 py-2 rounded-md text-sm font-medium hover:bg-muted transition-colors">
-              Join
-            </button>
-          </div>
-        </div>
+    <footer className="relative bg-zinc-950 text-zinc-100 py-24 px-4 md:px-8 border-t border-white/5 overflow-hidden">
+      {/* BACKGROUND DECORATION */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full" />
       </div>
-      
-      <div className="container mx-auto mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between">
-        <p className="text-muted-foreground text-xs text-center md:text-left">
-          &copy; {new Date().getFullYear()} Brand Life Store. All rights reserved.
-        </p>
-        <div className="flex space-x-4 mt-4 md:mt-0 text-muted-foreground text-xs">
-          <a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-foreground transition-colors">Terms of Service</a>
+
+      <div className="container relative mx-auto z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8">
+          {/* BRAND SECTION */}
+          <div className="lg:col-span-4 flex flex-col space-y-8">
+            <Link to="/shop/home" className="flex flex-col items-start gap-0 group">
+              <span className="text-5xl font-bold tracking-[ -0.05em] leading-none font-serif italic text-white group-hover:text-primary transition-colors duration-500">BL</span>
+              <span className="text-[10px] font-bold tracking-[0.5em] uppercase font-sans mt-2 opacity-60">Brand Life Store</span>
+            </Link>
+            <p className="text-zinc-400 text-sm leading-relaxed max-w-sm font-light">
+              Designing the future of everyday luxury. Our collections are crafted with precision, blending timeless ethics with contemporary silhouettes.
+            </p>
+            <div className="flex space-x-6 pt-4">
+              {[
+                { icon: Instagram, href: "#" },
+                { icon: Facebook, href: "#" },
+                { icon: Twitter, href: "#" },
+                { icon: Youtube, href: "#" },
+              ].map((social, idx) => (
+                <a key={idx} href={social.href} className="text-zinc-500 hover:text-primary transition-all duration-300 transform hover:-translate-y-1">
+                  <social.icon className="w-5 h-5" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-1 hidden lg:block" />
+
+          {/* LINKS SECTIONS */}
+          <div className="lg:col-span-2 flex flex-col space-y-6">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Shop Collections</h4>
+            <div className="flex flex-col space-y-4">
+              {['shirts', 'pants', 'outerwear'].map(cat => (
+                <span key={cat} onClick={() => handleNavigateToCategory(cat)} className="text-zinc-300 hover:text-white text-sm transition-colors cursor-pointer font-medium uppercase tracking-widest text-[11px] hover:translate-x-1 transform duration-300 inline-block">
+                  {cat === 'pants' ? 'Pants & Jeans' : cat}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 flex flex-col space-y-6">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Client Care</h4>
+            <div className="flex flex-col space-y-4">
+              {[
+                { label: "Contact Us", to: "/shop/contact" },
+                { label: "FAQs", to: "/shop/faq" },
+                { label: "Shipping & Returns", to: "/shop/returns" },
+                { label: "Size Guide", to: "/shop/size-guide" }
+              ].map(link => (
+                <Link key={link.label} to={link.to} className="text-zinc-300 hover:text-white text-sm transition-colors font-medium uppercase tracking-widest text-[11px] hover:translate-x-1 transform duration-300 inline-block">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* NEWSLETTER */}
+          <div className="lg:col-span-3 flex flex-col space-y-6">
+            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Elite Access</h4>
+            <div className="space-y-4">
+              <p className="text-zinc-400 text-[11px] uppercase tracking-wider font-medium leading-relaxed">
+                Join our circle for exclusive drops and private events.
+              </p>
+              <div className="relative group">
+                <input
+                  type="email"
+                  placeholder="JOURNAL@BRANDLIFE.COM"
+                  className="w-full bg-white/5 border-b border-white/10 focus:border-primary focus:outline-none text-white px-2 py-4 text-[10px] tracking-[0.2em] transition-all duration-500 bg-transparent uppercase"
+                />
+                <button className="absolute right-0 bottom-4 text-[10px] font-bold uppercase tracking-widest text-primary hover:text-white transition-colors">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8">
+          <p className="text-zinc-500 text-[9px] uppercase tracking-[0.4em] font-bold">
+            &copy; {new Date().getFullYear()} Brand Life Store &mdash; ALL RIGHTS RESERVED
+          </p>
+          <div className="flex space-x-8 text-zinc-500 text-[9px] uppercase tracking-[0.3em] font-bold">
+            <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">Terms of Service</a>
+          </div>
+          <div className="text-zinc-600 text-[9px] font-bold tracking-[0.2em]">
+            USA &bull; UK &bull; FR
+          </div>
         </div>
       </div>
     </footer>

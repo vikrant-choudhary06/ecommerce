@@ -10,6 +10,8 @@ const OrderSchema = new mongoose.Schema({
       image: String,
       price: String,
       quantity: Number,
+      color: String,
+      size: String,
     },
   ],
   addressInfo: {
@@ -24,6 +26,8 @@ const OrderSchema = new mongoose.Schema({
   paymentMethod: String,
   paymentStatus: String,
   totalAmount: Number,
+  discountAmount: Number,
+  couponCode: String,
   orderDate: Date,
   orderUpdateDate: Date,
   paymentId: String,

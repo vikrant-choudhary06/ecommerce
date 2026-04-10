@@ -61,8 +61,6 @@ export const addProductFormElements = [
       { id: "shirts", label: "Shirts" },
       { id: "pants", label: "Pants & Jeans" },
       { id: "outerwear", label: "Outerwear" },
-      { id: "accessories", label: "Accessories" },
-      { id: "footwear", label: "Footwear" },
     ],
   },
   {
@@ -99,6 +97,20 @@ export const addProductFormElements = [
     type: "number",
     placeholder: "Enter total stock",
   },
+  {
+    label: "Colors",
+    name: "colors",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter colors separated by comma (e.g. Red, Blue)",
+  },
+  {
+    label: "Sizes",
+    name: "sizes",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter sizes separated by comma (e.g. S, M, L)",
+  },
 ];
 
 export const shoppingViewHeaderMenuItems = [
@@ -128,16 +140,6 @@ export const shoppingViewHeaderMenuItems = [
     path: "/shop/listing",
   },
   {
-    id: "accessories",
-    label: "Accessories",
-    path: "/shop/listing",
-  },
-  {
-    id: "footwear",
-    label: "Footwear",
-    path: "/shop/listing",
-  },
-  {
     id: "search",
     label: "Search",
     path: "/shop/search",
@@ -148,8 +150,6 @@ export const categoryOptionsMap = {
   shirts: "Shirts",
   pants: "Pants & Jeans",
   outerwear: "Outerwear",
-  accessories: "Accessories",
-  footwear: "Footwear",
 };
 
 export const brandOptionsMap = {
@@ -166,8 +166,6 @@ export const filterOptions = {
     { id: "shirts", label: "Shirts" },
     { id: "pants", label: "Pants & Jeans" },
     { id: "outerwear", label: "Outerwear" },
-    { id: "accessories", label: "Accessories" },
-    { id: "footwear", label: "Footwear" },
   ],
   brand: [
     { id: "nike", label: "Nike" },

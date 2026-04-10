@@ -39,7 +39,11 @@ function AdminProductTile({
             onClick={() => {
               setOpenCreateProductsDialog(true);
               setCurrentEditedId(product?._id);
-              setFormData(product);
+              setFormData({
+                ...product,
+                colors: product?.colors ? product.colors.join(", ") : "",
+                sizes: product?.sizes ? product.sizes.join(", ") : "",
+              });
               if (setUploadedImageUrls) {
                 setUploadedImageUrls(product?.images?.length ? product.images : (product?.image ? [product.image] : []));
               }

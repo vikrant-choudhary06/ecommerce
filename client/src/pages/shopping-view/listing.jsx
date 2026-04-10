@@ -1,5 +1,6 @@
 import ProductFilter from "@/components/shopping-view/filter";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import ProductSkeleton from "@/components/shopping-view/product-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { sortOptions } from "@/config";
-import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { addToCart, fetchCartItems, setCartDrawer } from "@/store/shop/cart-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -33,7 +34,7 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
+  const { productList, productDetails, isLoading } = useSelector(
     (state) => state.shopProducts
   );
   const { cartItems } = useSelector((state) => state.shopCart);
@@ -102,6 +103,7 @@ function ShoppingListing() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
+        dispatch(setCartDrawer(true));
         toast({
           title: "Product is added to bag",
         });
@@ -167,7 +169,11 @@ function ShoppingListing() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-          {productList && productList.length > 0
+          {isLoading
+            ? Array.from({ length: 8 }).map((_, idx) => (
+                <ProductSkeleton key={idx} />
+              ))
+            : productList && productList.length > 0
             ? productList.map((productItem) => (
                 <ShoppingProductTile
                   key={productItem._id}
@@ -175,7 +181,7 @@ function ShoppingListing() {
                   handleAddtoCart={handleAddtoCart}
                 />
               ))
-            : <div className="col-span-full py-12 text-center text-muted-foreground">No products found matching your criteria.</div>}
+            : <div className="col-span-full py-12 text-center text-muted-foreground font-serif italic">No products found matching your criteria.</div>}
         </div>
       </div>
     </div>

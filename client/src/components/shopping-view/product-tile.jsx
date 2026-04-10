@@ -4,11 +4,46 @@ import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
 import { useNavigate } from "react-router-dom";
 
+import { Heart } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { addToWishlist } from "@/store/shop/wishlist-slice";
+import { useToast } from "../ui/use-toast";
+
 function ShoppingProductTile({
   product,
   handleAddtoCart,
 }) {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const { toast } = useToast();
+
+  function handleAddToWishlist(productId) {
+    if (!user) {
+      toast({
+        title: "Please login to add to wishlist",
+        variant: "destructive",
+      });
+      return;
+    }
+    dispatch(
+      addToWishlist({
+        userId: user?.id,
+        productId,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        toast({
+          title: "Product added to wishlist",
+        });
+      } else {
+        toast({
+          title: data?.payload?.message || "Error occurred",
+          variant: "destructive",
+        });
+      }
+    });
+  }
 
   return (
     <Card className="w-full max-w-sm mx-auto border-none shadow-none group bg-background">
@@ -35,6 +70,17 @@ function ShoppingProductTile({
               Sale
             </Badge>
           ) : null}
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToWishlist(product?._id);
+            }}
+            variant="ghost"
+            size="icon"
+            className="absolute top-3 right-3 bg-secondary/80 backdrop-blur-md border border-border/50 hover:bg-white dark:hover:bg-zinc-800 text-red-500 transition-all z-10 rounded-full"
+          >
+            <Heart className="w-5 h-5 fill-red-500/10" />
+          </Button>
         </div>
         <CardContent className="p-0 text-center">
           <h2 className="text-xl font-serif font-bold mb-1 group-hover:text-muted-foreground transition-colors">{product?.title}</h2>

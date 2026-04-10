@@ -3,7 +3,7 @@ const Product = require("../../models/Product");
 
 const addToCart = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { userId, productId, quantity, color, size } = req.body;
 
     if (!userId || !productId || quantity <= 0) {
       return res.status(400).json({
@@ -28,11 +28,13 @@ const addToCart = async (req, res) => {
     }
 
     const findCurrentProductIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId.toString() === productId && 
+                item.color === color && 
+                item.size === size
     );
 
     if (findCurrentProductIndex === -1) {
-      cart.items.push({ productId, quantity });
+      cart.items.push({ productId, quantity, color, size });
     } else {
       cart.items[findCurrentProductIndex].quantity += quantity;
     }
@@ -90,6 +92,8 @@ const fetchCartItems = async (req, res) => {
       price: item.productId.price,
       salePrice: item.productId.salePrice,
       quantity: item.quantity,
+      color: item.color,
+      size: item.size,
     }));
 
     res.status(200).json({
@@ -110,7 +114,7 @@ const fetchCartItems = async (req, res) => {
 
 const updateCartItemQty = async (req, res) => {
   try {
-    const { userId, productId, quantity } = req.body;
+    const { userId, productId, quantity, color, size } = req.body;
 
     if (!userId || !productId || quantity <= 0) {
       return res.status(400).json({
@@ -128,7 +132,9 @@ const updateCartItemQty = async (req, res) => {
     }
 
     const findCurrentProductIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === productId
+      (item) => item.productId.toString() === productId && 
+                item.color === color && 
+                item.size === size
     );
 
     if (findCurrentProductIndex === -1) {
@@ -153,6 +159,8 @@ const updateCartItemQty = async (req, res) => {
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
+      color: item.color,
+      size: item.size,
     }));
 
     res.status(200).json({
@@ -174,6 +182,7 @@ const updateCartItemQty = async (req, res) => {
 const deleteCartItem = async (req, res) => {
   try {
     const { userId, productId } = req.params;
+    const { color, size } = req.body;
     if (!userId || !productId) {
       return res.status(400).json({
         success: false,
@@ -194,7 +203,10 @@ const deleteCartItem = async (req, res) => {
     }
 
     cart.items = cart.items.filter(
-      (item) => item.productId._id.toString() !== productId
+      (item) => 
+        !(item.productId._id.toString() === productId && 
+          item.color === color && 
+          item.size === size)
     );
 
     await cart.save();
@@ -211,6 +223,8 @@ const deleteCartItem = async (req, res) => {
       price: item.productId ? item.productId.price : null,
       salePrice: item.productId ? item.productId.salePrice : null,
       quantity: item.quantity,
+      color: item.color,
+      size: item.size,
     }));
 
     res.status(200).json({

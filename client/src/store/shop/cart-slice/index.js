@@ -4,17 +4,20 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 const initialState = {
   cartItems: [],
   isLoading: false,
+  isOpen: false,
 };
 
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ userId, productId, quantity }) => {
+  async ({ userId, productId, quantity, color, size }) => {
     const response = await axios.post(
       "http://localhost:5000/api/shop/cart/add",
       {
         userId,
         productId,
         quantity,
+        color,
+        size,
       }
     );
 
@@ -35,9 +38,12 @@ export const fetchCartItems = createAsyncThunk(
 
 export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
-  async ({ userId, productId }) => {
+  async ({ userId, productId, color, size }) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/shop/cart/${userId}/${productId}`
+      `http://localhost:5000/api/shop/cart/${userId}/${productId}`,
+      {
+        data: { color, size },
+      }
     );
 
     return response.data;
@@ -46,13 +52,15 @@ export const deleteCartItem = createAsyncThunk(
 
 export const updateCartQuantity = createAsyncThunk(
   "cart/updateCartQuantity",
-  async ({ userId, productId, quantity }) => {
+  async ({ userId, productId, quantity, color, size }) => {
     const response = await axios.put(
       "http://localhost:5000/api/shop/cart/update-cart",
       {
         userId,
         productId,
         quantity,
+        color,
+        size,
       }
     );
 
@@ -63,7 +71,11 @@ export const updateCartQuantity = createAsyncThunk(
 const shoppingCartSlice = createSlice({
   name: "shoppingCart",
   initialState,
-  reducers: {},
+  reducers: {
+    setCartDrawer: (state, action) => {
+      state.isOpen = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(addToCart.pending, (state) => {
@@ -113,4 +125,5 @@ const shoppingCartSlice = createSlice({
   },
 });
 
+export const { setCartDrawer } = shoppingCartSlice.actions;
 export default shoppingCartSlice.reducer;

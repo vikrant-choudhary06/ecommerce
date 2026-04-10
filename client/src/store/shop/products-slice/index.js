@@ -5,6 +5,7 @@ const initialState = {
   isLoading: false,
   productList: [],
   productDetails: null,
+  recommendedProducts: [],
 };
 
 export const fetchAllFilteredProducts = createAsyncThunk(
@@ -32,6 +33,17 @@ export const fetchProductDetails = createAsyncThunk(
   async (id) => {
     const result = await axios.get(
       `http://localhost:5000/api/shop/products/get/${id}`
+    );
+
+    return result?.data;
+  }
+);
+
+export const fetchRecommendedProducts = createAsyncThunk(
+  "/products/fetchRecommendedProducts",
+  async (category) => {
+    const result = await axios.get(
+      `http://localhost:5000/api/shop/products/get?category=${category}`
     );
 
     return result?.data;
@@ -69,6 +81,9 @@ const shoppingProductSlice = createSlice({
       .addCase(fetchProductDetails.rejected, (state, action) => {
         state.isLoading = false;
         state.productDetails = null;
+      })
+      .addCase(fetchRecommendedProducts.fulfilled, (state, action) => {
+        state.recommendedProducts = action.payload.data;
       });
   },
 });

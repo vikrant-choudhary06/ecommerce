@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
@@ -7,6 +8,7 @@ import AdminDashboard from "./pages/admin-view/dashboard";
 import AdminProducts from "./pages/admin-view/products";
 import AdminOrders from "./pages/admin-view/orders";
 import AdminFeatures from "./pages/admin-view/features";
+import AdminCoupons from "./pages/admin-view/coupons";
 import ShoppingLayout from "./components/shopping-view/layout";
 import NotFound from "./pages/not-found";
 import ShoppingHome from "./pages/shopping-view/home";
@@ -28,6 +30,7 @@ import FAQ from "./pages/shopping-view/faq";
 import ShippingAndReturns from "./pages/shopping-view/returns";
 import SizeGuide from "./pages/shopping-view/size-guide";
 import ScrollToTop from "./components/common/scroll-to-top";
+import WishlistPage from "./pages/shopping-view/wishlist";
 
 
 function App() {
@@ -35,6 +38,8 @@ function App() {
     (state) => state.auth
   );
   const dispatch = useDispatch();
+
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(checkAuth());
@@ -46,64 +51,77 @@ function App() {
   return (
     <div className="flex flex-col overflow-hidden bg-background text-foreground min-h-screen">
       <ScrollToTop />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <CheckAuth
-              isAuthenticated={isAuthenticated}
-              user={user}
-            ></CheckAuth>
-          }
-        />
-        <Route
-          path="/auth"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <AuthLayout />
-            </CheckAuth>
-          }
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 flex flex-col"
         >
-          <Route path="login" element={<AuthLogin />} />
-          <Route path="register" element={<AuthRegister />} />
-        </Route>
-        <Route
-          path="/admin"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <AdminLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="features" element={<AdminFeatures />} />
-        </Route>
-        <Route
-          path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="home" element={<ShoppingHome />} />
-          <Route path="listing" element={<ShoppingListing />} />
-          <Route path="product/:id" element={<ShoppingProductDetails />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="paypal-return" element={<PaypalReturnPage />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="search" element={<SearchProducts />} />
-          <Route path="contact" element={<ContactUs />} />
-          <Route path="faq" element={<FAQ />} />
-          <Route path="returns" element={<ShippingAndReturns />} />
-          <Route path="size-guide" element={<SizeGuide />} />
-        </Route>
-        <Route path="/unauth-page" element={<UnauthPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Routes location={location} key={location.pathname}>
+            <Route
+              path="/"
+              element={
+                <CheckAuth
+                  isAuthenticated={isAuthenticated}
+                  user={user}
+                ></CheckAuth>
+              }
+            />
+            <Route
+              path="/auth"
+              element={
+                <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                  <AuthLayout />
+                </CheckAuth>
+              }
+            >
+              <Route path="login" element={<AuthLogin />} />
+              <Route path="register" element={<AuthRegister />} />
+            </Route>
+            <Route
+              path="/admin"
+              element={
+                <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                  <AdminLayout />
+                </CheckAuth>
+              }
+            >
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="features" element={<AdminFeatures />} />
+              <Route path="coupons" element={<AdminCoupons />} />
+            </Route>
+            <Route
+              path="/shop"
+              element={
+                <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+                  <ShoppingLayout />
+                </CheckAuth>
+              }
+            >
+              <Route path="home" element={<ShoppingHome />} />
+              <Route path="listing" element={<ShoppingListing />} />
+              <Route path="product/:id" element={<ShoppingProductDetails />} />
+              <Route path="checkout" element={<ShoppingCheckout />} />
+              <Route path="account" element={<ShoppingAccount />} />
+              <Route path="paypal-return" element={<PaypalReturnPage />} />
+              <Route path="payment-success" element={<PaymentSuccessPage />} />
+              <Route path="search" element={<SearchProducts />} />
+              <Route path="contact" element={<ContactUs />} />
+              <Route path="faq" element={<FAQ />} />
+              <Route path="returns" element={<ShippingAndReturns />} />
+              <Route path="size-guide" element={<SizeGuide />} />
+              <Route path="wishlist" element={<WishlistPage />} />
+            </Route>
+            <Route path="/unauth-page" element={<UnauthPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

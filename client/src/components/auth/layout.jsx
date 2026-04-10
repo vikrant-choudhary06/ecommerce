@@ -1,7 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
+import PageWrapper from "../common/page-wrapper";
 import authImage from "../../assets/auth_background_fashion_1775645465669.png"; // Note: I need to make sure this path is correct if I move it, or just use the absolute path for now if I can't move it. Wait, I should probably copy the image to assets.
 
 function AuthLayout() {
+  const location = useLocation();
   return (
     <div className="flex min-h-screen w-full font-sans">
       <div className="hidden lg:flex relative items-center justify-center bg-black w-1/2 overflow-hidden">
@@ -25,7 +28,11 @@ function AuthLayout() {
       </div>
       <div className="flex flex-1 items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
         <div className="w-full max-w-md">
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <PageWrapper key={location.pathname}>
+              <Outlet />
+            </PageWrapper>
+          </AnimatePresence>
         </div>
       </div>
     </div>

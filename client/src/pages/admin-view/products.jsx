@@ -30,6 +30,8 @@ const initialFormData = {
   salePrice: "",
   totalStock: "",
   averageReview: 0,
+  colors: "",
+  sizes: "",
 };
 
 function AdminProducts() {
@@ -55,6 +57,8 @@ function AdminProducts() {
               ...formData,
               image: uploadedImageUrls[0] || "",
               images: uploadedImageUrls,
+              colors: typeof formData.colors === 'string' ? formData.colors.split(",").map(item => item.trim()).filter(item => item !== "") : formData.colors,
+              sizes: typeof formData.sizes === 'string' ? formData.sizes.split(",").map(item => item.trim()).filter(item => item !== "") : formData.sizes,
             },
           })
         ).then((data) => {
@@ -72,6 +76,8 @@ function AdminProducts() {
             ...formData,
             image: uploadedImageUrls[0] || "",
             images: uploadedImageUrls,
+            colors: typeof formData.colors === 'string' ? formData.colors.split(",").map(item => item.trim()).filter(item => item !== "") : formData.colors,
+            sizes: typeof formData.sizes === 'string' ? formData.sizes.split(",").map(item => item.trim()).filter(item => item !== "") : formData.sizes,
           })
         ).then((data) => {
           if (data?.payload?.success) {

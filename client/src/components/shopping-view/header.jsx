@@ -1,4 +1,4 @@
-import { LogOut, Menu, ShoppingBag, UserCog, Sun, Moon } from "lucide-react";
+import { LogOut, Menu, ShoppingBag, UserCog, Sun, Moon, Heart } from "lucide-react";
 import {
   Link,
   useLocation,
@@ -21,9 +21,10 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
-import { fetchCartItems } from "@/store/shop/cart-slice";
+import { fetchCartItems, setCartDrawer } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 import { useTheme } from "../common/theme-provider";
+import { fetchWishlistItems } from "@/store/shop/wishlist-slice";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -69,8 +70,8 @@ function MenuItems() {
 
 function HeaderRightContent() {
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const { cartItems } = useSelector((state) => state.shopCart);
-  const [openCartSheet, setOpenCartSheet] = useState(false);
+  const { cartItems, isOpen } = useSelector((state) => state.shopCart);
+  const { wishlistItems } = useSelector((state) => state.shopWishlist);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { theme, setTheme } = useTheme();
@@ -82,6 +83,7 @@ function HeaderRightContent() {
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       dispatch(fetchCartItems(user?.id));
+      dispatch(fetchWishlistItems(user?.id));
     }
   }, [dispatch, isAuthenticated, user]);
 
@@ -96,9 +98,23 @@ function HeaderRightContent() {
         {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         <span className="sr-only">Toggle theme</span>
       </Button>
-      <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+
+      <Button
+        onClick={() => navigate("/shop/wishlist")}
+        variant="ghost"
+        size="icon"
+        className="relative hover:bg-transparent hover:opacity-75"
+      >
+        <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+        <span className="absolute top-0 right-0 font-bold text-[10px] bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center">
+          {wishlistItems?.items?.length || 0}
+        </span>
+        <span className="sr-only">Favorites</span>
+      </Button>
+
+      <Sheet open={isOpen} onOpenChange={() => dispatch(setCartDrawer(false))}>
         <Button
-          onClick={() => setOpenCartSheet(true)}
+          onClick={() => dispatch(setCartDrawer(true))}
           variant="ghost"
           size="icon"
           className="relative hover:bg-transparent hover:opacity-75"
@@ -110,7 +126,7 @@ function HeaderRightContent() {
           <span className="sr-only">User cart</span>
         </Button>
         <UserCartWrapper
-          setOpenCartSheet={setOpenCartSheet}
+          setOpenCartSheet={(val) => dispatch(setCartDrawer(val))}
           cartItems={
             cartItems && cartItems.items && cartItems.items.length > 0
               ? cartItems.items
@@ -157,9 +173,29 @@ function HeaderRightContent() {
 
 function ShoppingHeader() {
   const { isAuthenticated } = useSelector((state) => state.auth);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (typeof window !== "undefined") {
+        if (window.scrollY > lastScrollY && window.scrollY > 100) {
+          setIsVisible(false);
+        } else {
+          setIsVisible(true);
+        }
+        setLastScrollY(window.scrollY);
+      }
+    };
+
+    window.addEventListener("scroll", controlNavbar);
+    return () => {
+      window.removeEventListener("scroll", controlNavbar);
+    };
+  }, [lastScrollY]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/90 backdrop-blur-md">
+    <header className={`sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl transition-all duration-500 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
       <div className="flex h-20 items-center justify-between px-4 md:px-8">
         <div className="flex items-center lg:w-1/4">
           <Link to="/shop/home" className="flex flex-col items-center gap-0">

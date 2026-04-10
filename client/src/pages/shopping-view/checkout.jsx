@@ -7,21 +7,29 @@ import { useState } from "react";
 import { createNewOrder } from "@/store/shop/order-slice";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { CheckCircleIcon } from "lucide-react";
+import { CheckCircleIcon, Tag } from "lucide-react";
+import { fetchCartItems } from "@/store/shop/cart-slice";
+import { Input } from "@/components/ui/input";
+import { validateCoupon, clearCoupon } from "@/store/shop/coupon-slice";
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const { approvalURL } = useSelector((state) => state.shopOrder);
+  const { couponDetails } = useSelector((state) => state.shopCoupon);
+  
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("paypal");
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [isCouponApplied, setIsCouponApplied] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const totalCartAmount =
+  const subTotal =
     cartItems && cartItems.items && cartItems.items.length > 0
       ? cartItems.items.reduce(
           (sum, currentItem) =>
@@ -34,8 +42,45 @@ function ShoppingCheckout() {
         )
       : 0;
 
+  let discountAmount = 0;
+  if (isCouponApplied && couponDetails) {
+    if (couponDetails.discountType === "percentage") {
+      discountAmount = (subTotal * couponDetails.discountAmount) / 100;
+    } else {
+      discountAmount = couponDetails.discountAmount;
+    }
+  }
+
+  const finalTotal = subTotal - discountAmount;
+
+  function handleApplyCoupon() {
+    if (!promoCode.trim()) return;
+
+    dispatch(validateCoupon(promoCode)).then((data) => {
+      if (data?.payload?.success) {
+        setIsCouponApplied(true);
+        toast({
+          title: "Coupon applied successfully!",
+          description: `You saved $${discountAmount.toFixed(2)}`,
+        });
+      } else {
+        setIsCouponApplied(false);
+        toast({
+          title: data?.payload?.message || "Invalid coupon code",
+          variant: "destructive",
+        });
+      }
+    });
+  }
+
+  function handleRemoveCoupon() {
+    setIsCouponApplied(false);
+    setPromoCode("");
+    dispatch(clearCoupon());
+  }
+
   function handleInitiatePayment() {
-    if (cartItems.length === 0) {
+    if (Object.keys(cartItems).length === 0 || (cartItems.items && cartItems.items.length === 0)) {
       toast({
         title: "Your bag is empty. Please add items to proceed",
         variant: "destructive",
@@ -62,6 +107,8 @@ function ShoppingCheckout() {
             ? singleCartItem?.salePrice
             : singleCartItem?.price,
         quantity: singleCartItem?.quantity,
+        color: singleCartItem?.color,
+        size: singleCartItem?.size,
       })),
       addressInfo: {
         addressId: currentSelectedAddress?._id,
@@ -74,7 +121,9 @@ function ShoppingCheckout() {
       orderStatus: paymentMethod === "cod" ? "confirmed" : "pending",
       paymentMethod: paymentMethod,
       paymentStatus: "pending",
-      totalAmount: totalCartAmount,
+      totalAmount: finalTotal,
+      discountAmount: discountAmount,
+      couponCode: isCouponApplied ? promoCode : "",
       orderDate: new Date(),
       orderUpdateDate: new Date(),
       paymentId: "",
@@ -84,6 +133,7 @@ function ShoppingCheckout() {
     dispatch(createNewOrder(orderData)).then((data) => {
       if (data?.payload?.success) {
         if (paymentMethod === "cod") {
+          dispatch(fetchCartItems(user?.id));
           setIsOrderPlaced(true);
           setTimeout(() => {
             navigate("/shop/payment-success");
@@ -102,85 +152,165 @@ function ShoppingCheckout() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="relative h-[400px] w-full overflow-hidden bg-muted flex items-center justify-center">
-        {/* Keeping image but adding a dark overlay or fallback style if missing */}
-        <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-50" />
-        <h1 className="relative z-10 text-5xl font-serif text-foreground uppercase tracking-widest font-bold">Checkout</h1>
+    <div className="flex flex-col min-h-screen bg-background">
+      <div className="relative h-[300px] w-full overflow-hidden bg-muted flex items-center justify-center">
+        <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-40" />
+        <div className="relative z-10 text-center space-y-2">
+            <h1 className="text-5xl font-serif text-foreground uppercase tracking-widest font-bold">Secure Checkout</h1>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground font-bold italic">Brand Life Store &copy; 2024</p>
+        </div>
       </div>
+      
       <div className="container mx-auto px-4 md:px-8 max-w-[1200px]">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mt-12 mb-24">
-          <div className="flex flex-col gap-6">
-            <h2 className="text-2xl font-serif font-bold uppercase tracking-tight border-b border-zinc-200 pb-4">Shipping Information</h2>
-            <Address
-              selectedId={currentSelectedAddress}
-              setCurrentSelectedAddress={setCurrentSelectedAddress}
-            />
-          </div>
-          <div className="flex flex-col gap-6 bg-muted p-8 border border-border">
-            <h2 className="text-2xl font-serif font-bold uppercase tracking-tight border-b border-zinc-200 pb-4">Order Summary</h2>
-            <div className="space-y-4">
-              {cartItems && cartItems.items && cartItems.items.length > 0
-                ? cartItems.items.map((item) => (
-                    <UserCartItemsContent key={item.productId} cartItem={item} />
-                  ))
-                : <p className="text-muted-foreground text-center py-4">Your bag is empty.</p>}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12 mb-24">
+          {/* LEFT SECTION - SHIPPING */}
+          <div className="lg:col-span-7 flex flex-col gap-8">
+            <div className="bg-background border border-border/50 p-8 shadow-sm rounded-sm">
+                <h2 className="text-xl font-serif font-bold uppercase tracking-widest border-b border-border pb-4 mb-6 flex items-center gap-3">
+                   <div className="w-1 h-6 bg-primary" />
+                   1. Shipping Information
+                </h2>
+                <Address
+                selectedId={currentSelectedAddress}
+                setCurrentSelectedAddress={setCurrentSelectedAddress}
+                />
             </div>
-            
-            
-            <div className="mt-8 space-y-4 border-t border-zinc-200 pt-6">
-              <div className="flex flex-col gap-3 mb-6">
-                <span className="font-semibold uppercase tracking-wider text-sm text-muted-foreground">Payment Method</span>
-                <label className="flex items-center gap-3 cursor-pointer p-3 border border-zinc-200 hover:border-black transition-colors">
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="paypal" 
-                    checked={paymentMethod === "paypal"} 
-                    onChange={() => setPaymentMethod("paypal")} 
-                    className="accent-primary w-4 h-4"
-                  />
-                  <span>Online Payment (Paypal)</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer p-3 border border-zinc-200 hover:border-black transition-colors">
-                  <input 
-                    type="radio" 
-                    name="paymentMethod" 
-                    value="cod" 
-                    checked={paymentMethod === "cod"} 
-                    onChange={() => setPaymentMethod("cod")} 
-                    className="accent-primary w-4 h-4"
-                  />
-                  <span>Cash on Delivery (COD)</span>
-                </label>
-              </div>
 
-              <div className="flex justify-between items-center text-lg">
-                <span className="font-semibold uppercase tracking-wider text-sm text-muted-foreground">Subtotal</span>
-                <span className="font-bold text-foreground">${totalCartAmount.toFixed(2)}</span>
-              </div>
+            <div className="bg-background border border-border/50 p-8 shadow-sm rounded-sm">
+                <h2 className="text-xl font-serif font-bold uppercase tracking-widest border-b border-border pb-4 mb-6 flex items-center gap-3">
+                   <div className="w-1 h-6 bg-primary" />
+                   2. Payment Selection
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label className={`flex items-center justify-between p-6 border transition-all cursor-pointer ${paymentMethod === 'paypal' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border hover:border-zinc-500'}`}>
+                        <div className="flex flex-col gap-1">
+                            <span className="font-bold uppercase tracking-widest text-xs">PayPal / Online</span>
+                            <span className="text-[10px] text-muted-foreground italic font-serif">Secure & Fast</span>
+                        </div>
+                        <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            value="paypal" 
+                            checked={paymentMethod === "paypal"} 
+                            onChange={() => setPaymentMethod("paypal")} 
+                            className="hidden"
+                        />
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'paypal' ? 'border-primary' : 'border-muted'}`}>
+                             {paymentMethod === 'paypal' && <div className="w-2 h-2 bg-primary rounded-full transition-all" />}
+                        </div>
+                    </label>
+                    <label className={`flex items-center justify-between p-6 border transition-all cursor-pointer ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border hover:border-zinc-500'}`}>
+                        <div className="flex flex-col gap-1">
+                            <span className="font-bold uppercase tracking-widest text-xs">Cash on Delivery</span>
+                            <span className="text-[10px] text-muted-foreground italic font-serif">Pay at your door</span>
+                        </div>
+                        <input 
+                            type="radio" 
+                            name="paymentMethod" 
+                            value="cod" 
+                            checked={paymentMethod === "cod"} 
+                            onChange={() => setPaymentMethod("cod")} 
+                            className="hidden"
+                        />
+                         <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'cod' ? 'border-primary' : 'border-muted'}`}>
+                             {paymentMethod === 'cod' && <div className="w-2 h-2 bg-primary rounded-full transition-all" />}
+                        </div>
+                    </label>
+                </div>
             </div>
-            
-            <div className="mt-6 w-full">
-              <Button 
-                onClick={handleInitiatePayment} 
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 rounded-none uppercase tracking-widest py-6 text-sm"
-              >
-                {isPaymentStart
-                  ? "Processing Paypal Transaction..."
-                  : `Checkout with ${paymentMethod === "cod" ? "COD" : "Paypal"}`}
-              </Button>
+          </div>
+
+          {/* RIGHT SECTION - SUMMARY */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="bg-muted/30 p-8 border border-border shadow-md rounded-sm sticky top-24">
+                <h2 className="text-xl font-serif font-bold uppercase tracking-widest border-b border-border/50 pb-4 mb-8">Summary of Bag</h2>
+                <div className="space-y-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                {cartItems && cartItems.items && cartItems.items.length > 0
+                    ? cartItems.items.map((item) => (
+                        <UserCartItemsContent key={item.productId} cartItem={item} />
+                    ))
+                    : <p className="text-muted-foreground text-center py-4 font-serif italic">Your journey starts here. Add items.</p>}
+                </div>
+                
+                {/* PROMO CODE SECTION */}
+                <div className="mt-10 pt-8 border-t border-border/50">
+                    {!isCouponApplied ? (
+                        <div className="space-y-4">
+                             <div className="flex items-center gap-2 mb-2">
+                                <Tag className="w-4 h-4 text-primary" />
+                                <span className="text-[10px] font-bold uppercase tracking-widest">Gift / Promotion Code</span>
+                            </div>
+                            <div className="flex gap-2">
+                                <Input 
+                                    placeholder="Enter Code (e.g. WELCOME10)" 
+                                    value={promoCode}
+                                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                                    className="rounded-none border-border bg-background uppercase text-xs tracking-widest h-12"
+                                />
+                                <Button 
+                                    onClick={handleApplyCoupon}
+                                    variant="outline"
+                                    className="rounded-none border-primary text-primary hover:bg-primary hover:text-white px-6 h-12 text-[10px] font-bold uppercase tracking-widest transition-all"
+                                >
+                                    Apply
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="bg-green-500/10 border border-green-500/20 p-4 flex items-center justify-between">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Coupon Applied</span>
+                                <span className="text-xs font-bold font-serif italic">{promoCode}</span>
+                            </div>
+                            <Button onClick={handleRemoveCoupon} variant="ghost" className="text-xs hover:bg-transparent text-red-500 p-0 h-auto font-bold uppercase tracking-widest">Remove</Button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="mt-8 space-y-4 border-t border-border/50 pt-8">
+                    <div className="flex justify-between items-center">
+                        <span className="uppercase tracking-widest text-[10px] font-bold text-muted-foreground">Original Total</span>
+                        <span className="font-bold text-sm text-foreground">${subTotal.toFixed(2)}</span>
+                    </div>
+                    {isCouponApplied && (
+                        <div className="flex justify-between items-center animate-in slide-in-from-right-2">
+                            <span className="uppercase tracking-widest text-[10px] font-bold text-green-600">Promotion Applied</span>
+                            <span className="font-bold text-sm text-green-600">-${discountAmount.toFixed(2)}</span>
+                        </div>
+                    )}
+                    <div className="flex justify-between items-center text-lg pt-4 border-t border-border/10">
+                        <span className="font-bold uppercase tracking-[.2em] text-xs">Final Payable</span>
+                        <span className="font-bold text-2xl tracking-tighter text-foreground">${finalTotal.toFixed(2)}</span>
+                    </div>
+                </div>
+                
+                <div className="mt-10">
+                    <Button 
+                        onClick={handleInitiatePayment} 
+                        className="w-full bg-primary text-primary-foreground hover:bg-black rounded-none uppercase tracking-[.3em] py-8 text-[10px] font-bold shadow-2xl transition-all duration-500"
+                    >
+                        {isPaymentStart
+                        ? "Connecting to Security Gate..."
+                        : `Confirm & Checkout`}
+                    </Button>
+                    <p className="text-[9px] uppercase tracking-widest text-muted-foreground text-center mt-4 font-bold">Encrypted & Secure Payment Processing</p>
+                </div>
             </div>
           </div>
         </div>
       </div>
 
       {isOrderPlaced && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="flex flex-col items-center gap-4 animate-in zoom-in-50 duration-500 delay-150">
-            <CheckCircleIcon className="w-24 h-24 text-green-500" strokeWidth={1.5} />
-            <h2 className="text-3xl font-serif font-bold text-foreground tracking-tight">Order Placed Successfully!</h2>
-            <p className="text-muted-foreground text-lg">Redirecting you...</p>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/95 backdrop-blur-md animate-in fade-in duration-500">
+          <div className="flex flex-col items-center gap-6 animate-in zoom-in-50 duration-700 delay-200">
+            <div className="p-6 bg-green-500/10 rounded-full">
+                <CheckCircleIcon className="w-20 h-20 text-green-500" strokeWidth={1} />
+            </div>
+            <div className="text-center space-y-2">
+                <h2 className="text-4xl font-serif font-bold text-foreground tracking-tight uppercase">Gratitude.</h2>
+                <p className="text-muted-foreground text-sm uppercase tracking-[.4em] font-bold">Order Place Successfully</p>
+            </div>
+            <div className="w-12 h-1 bg-primary/20 animate-pulse mt-4" />
           </div>
         </div>
       )}

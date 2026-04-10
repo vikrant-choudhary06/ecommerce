@@ -88,12 +88,13 @@ function SearchProducts() {
       {!searchResults.length ? (
         <div className="flex flex-col items-center justify-center py-20 animate-in fade-in zoom-in duration-500">
           <h1 className="text-4xl font-serif font-bold text-muted-foreground opacity-50 uppercase tracking-widest">No results found</h1>
-          <p className="text-muted-foreground mt-2">Try searching for something else, like "Shirts" or "Accessories"</p>
+          <p className="text-muted-foreground mt-2">Try searching for something else, like &quot;Shirts&quot; or &quot;Jeans&quot;</p>
         </div>
       ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {searchResults.map((item) => (
           <ShoppingProductTile
+            key={item._id}
             handleAddtoCart={handleAddtoCart}
             product={item}
           />

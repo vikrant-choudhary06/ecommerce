@@ -4,10 +4,10 @@ import {
   ChevronRightIcon,
   CloudLightning,
   ShirtIcon,
-  UmbrellaIcon,
-  WatchIcon,
-  ShoppingBag
+  ShoppingBag,
+  Sparkles
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -23,61 +23,14 @@ import { getFeatureImages } from "@/store/common-slice";
 
 import { NikeIcon, AdidasIcon, PumaIcon, LeviIcon, ZaraIcon, HMIcon } from "@/components/common/brand-icons";
 
-import p1 from "../../assets/p1.png";
-import p2 from "../../assets/p2.png";
-import p3 from "../../assets/p3.png";
-import p4 from "../../assets/p4.png";
-const dummyBanners = [
-  { image: "https://images.unsplash.com/photo-1617137968427-85924c800a22?w=2000&q=80" },
-  { image: "https://images.unsplash.com/photo-1516257984-b1b4d707412e?w=2000&q=80" },
-  { image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=2000&q=80" },
-];
-
-const dummyProducts = [
-  {
-    _id: "dummy1",
-    image: p1,
-    title: "Signature Leather Jacket",
-    category: "outerwear",
-    brand: "nike",
-    price: 299,
-    salePrice: 199,
-  },
-  {
-    _id: "dummy2",
-    image: p2,
-    title: "Classic Oxford Shirt",
-    category: "shirts",
-    brand: "zara",
-    price: 80,
-    salePrice: 65,
-  },
-  {
-    _id: "dummy3",
-    image: p3,
-    title: "Luxe Leather Satchel",
-    category: "accessories",
-    brand: "puma",
-    price: 150,
-    salePrice: 120,
-  },
-  {
-    _id: "dummy4",
-    image: p4,
-    title: "Urban Elite Sneakers",
-    category: "footwear",
-    brand: "adidas",
-    price: 180,
-    salePrice: 145,
-  },
-];
+// No dummy data fallbacks - purely database driven
+const dummyBanners = [];
+const dummyProducts = [];
 
 const categoriesWithIcon = [
   { id: "shirts", label: "Shirts", icon: ShirtIcon },
   { id: "pants", label: "Pants & Jeans", icon: ShoppingBag },
   { id: "outerwear", label: "Outerwear", icon: CloudLightning },
-  { id: "accessories", label: "Accessories", icon: WatchIcon },
-  { id: "footwear", label: "Footwear", icon: UmbrellaIcon },
 ];
 
 const brandsWithIcon = [
@@ -91,7 +44,7 @@ const brandsWithIcon = [
 
 function ShoppingHome() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const { productList, productDetails } = useSelector(
+  const { productList } = useSelector(
     (state) => state.shopProducts
   );
   const { featureImageList } = useSelector((state) => state.commonFeature);
@@ -134,13 +87,13 @@ function ShoppingHome() {
 
 
   useEffect(() => {
-    const banners = dummyBanners;
+    const banners = featureImageList && featureImageList.length > 0 ? featureImageList : dummyBanners;
     const timer = setInterval(() => {
       setCurrentSlide((prevSlide) => (prevSlide + 1) % banners.length);
     }, 15000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [featureImageList]);
 
   useEffect(() => {
     dispatch(
@@ -155,7 +108,7 @@ function ShoppingHome() {
     dispatch(getFeatureImages());
   }, [dispatch]);
 
-  const bannersToShow = dummyBanners;
+  const bannersToShow = featureImageList && featureImageList.length > 0 ? featureImageList : dummyBanners;
 
   // Add defensive check for currentSlide bounds
   const activeSlide = currentSlide % (bannersToShow.length || 1);
@@ -221,12 +174,21 @@ function ShoppingHome() {
 
       </div>
 
-      <section className="py-24 bg-background">
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-24 bg-background"
+      >
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
-            Shop by Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+          <div className="flex flex-col items-center mb-16">
+            <h2 className="text-4xl font-serif font-bold text-center tracking-tighter uppercase mb-2">
+              Shop by Category
+            </h2>
+            <div className="w-20 h-1 bg-primary rounded-full" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8">
             {categoriesWithIcon.map((categoryItem, idx) => (
               <Card
                 key={idx}
@@ -243,13 +205,27 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="py-24 bg-muted/30">
+      {/* SECTION DIVIDER */}
+      <div className="w-full flex justify-center py-4 bg-background">
+        <div className="w-1/3 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      </div>
+
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-24 bg-muted/20"
+      >
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
-            Featured Brands
-          </h2>
+          <div className="flex flex-col items-center mb-16">
+            <h2 className="text-4xl font-serif font-bold text-center tracking-tighter uppercase mb-2">
+              Featured Brands
+            </h2>
+            <div className="w-20 h-0.5 bg-primary/30" />
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
             {brandsWithIcon.map((brandItem, idx) => (
               <Card
@@ -265,13 +241,30 @@ function ShoppingHome() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section className="py-24 bg-background">
+      {/* SECTION DIVIDER WITH ICON */}
+      <div className="relative w-full flex items-center justify-center py-12 bg-background">
+        <div className="absolute w-full h-px bg-border/40" />
+        <div className="relative bg-background px-6">
+            <Sparkles className="w-5 h-5 text-primary/40" />
+        </div>
+      </div>
+
+      <motion.section 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="py-24 bg-background"
+      >
         <div className="container mx-auto px-4 md:px-8">
-          <h2 className="text-4xl font-serif font-bold text-center mb-16 tracking-tighter">
-            New Arrivals
-          </h2>
+          <div className="flex flex-col items-center mb-16">
+            <h2 className="text-4xl font-serif font-bold text-center tracking-tighter uppercase mb-2">
+              New Arrivals
+            </h2>
+            <p className="text-muted-foreground text-xs uppercase tracking-[0.3em] font-bold">Curated for excellence</p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-12">
             {(productList && productList.length > 0
               ? productList
@@ -284,9 +277,8 @@ function ShoppingHome() {
               />
             ))}
           </div>
-
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

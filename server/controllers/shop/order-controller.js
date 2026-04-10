@@ -50,7 +50,19 @@ const createOrder = async (req, res) => {
         await product.save();
       }
 
-      await Cart.findByIdAndDelete(cartId);
+      const cart = await Cart.findById(cartId);
+      if (cart) {
+        cart.items = cart.items.filter(
+          (item) =>
+            !cartItems.some(
+              (orderItem) => 
+                orderItem.productId === item.productId.toString() &&
+                orderItem.color === item.color &&
+                orderItem.size === item.size
+            )
+        );
+        await cart.save();
+      }
 
       return res.status(201).json({
         success: true,
@@ -167,7 +179,20 @@ const capturePayment = async (req, res) => {
     }
 
     const getCartId = order.cartId;
-    await Cart.findByIdAndDelete(getCartId);
+    const cart = await Cart.findById(getCartId);
+
+    if (cart) {
+      cart.items = cart.items.filter(
+        (item) =>
+          !order.cartItems.some(
+            (orderItem) => 
+              orderItem.productId === item.productId.toString() &&
+              orderItem.color === item.color &&
+              orderItem.size === item.size
+          )
+      );
+      await cart.save();
+    }
 
     await order.save();
 
