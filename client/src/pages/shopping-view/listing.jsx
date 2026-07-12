@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { sortOptions } from "@/config";
+import { sortOptions, filterOptions } from "@/config";
 import { addToCart, fetchCartItems, setCartDrawer } from "@/store/shop/cart-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
@@ -37,6 +37,48 @@ function ShoppingListing() {
   const { productList, productDetails, isLoading } = useSelector(
     (state) => state.shopProducts
   );
+
+  const woodenBrands = ["bamboo", "neem", "sandalwood", "rosewood", "teak"];
+  const woodenKeywords = [
+    "wood",
+    "wooden",
+    "bamboo",
+    "sandalwood",
+    "teak",
+    "rosewood",
+    "neem",
+    "mahogany",
+    "oak",
+    "pine",
+    "maple",
+    "birch",
+    "cedar",
+    "walnut",
+    "cherry",
+    "timber"
+  ];
+
+  const filteredProductList = productList?.filter((productItem) => {
+    // Exclude personal-care category
+    if (productItem.category === "personal-care") return false;
+
+    const brandLower = (productItem.brand || "").toLowerCase();
+    const titleLower = (productItem.title || "").toLowerCase();
+    const descLower = (productItem.description || "").toLowerCase();
+
+    // Exclude lamp
+    if (titleLower.includes("lamp") || descLower.includes("lamp")) return false;
+
+    // Exclude clock
+    if (titleLower.includes("clock") || descLower.includes("clock")) return false;
+
+    // Must be wooden-related
+    if (woodenBrands.includes(brandLower)) return true;
+    return woodenKeywords.some(
+      (keyword) => titleLower.includes(keyword) || descLower.includes(keyword)
+    );
+  }) || [];
+
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
@@ -131,15 +173,26 @@ function ShoppingListing() {
   }, [dispatch, sort, filters]);
 
 
+  const customFilterOptions = {
+    category: filterOptions.category.filter(
+      (option) => option.id !== "personal-care"
+    ),
+    brand: filterOptions.brand.filter((option) => option.id !== "neem"),
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 p-4 md:p-8 max-w-[1600px] mx-auto w-full">
-      <ProductFilter filters={filters} handleFilter={handleFilter} />
+      <ProductFilter
+        filters={filters}
+        handleFilter={handleFilter}
+        filterOptions={customFilterOptions}
+      />
       <div className="bg-background w-full rounded-none">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <h2 className="text-2xl font-serif font-bold tracking-tight">Collection</h2>
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground text-sm uppercase tracking-wider">
-              {productList?.length} Items
+              {filteredProductList?.length} Items
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -173,8 +226,8 @@ function ShoppingListing() {
             ? Array.from({ length: 8 }).map((_, idx) => (
               <ProductSkeleton key={idx} />
             ))
-            : productList && productList.length > 0
-              ? productList.map((productItem) => (
+            : filteredProductList && filteredProductList.length > 0
+              ? filteredProductList.map((productItem) => (
                 <ShoppingProductTile
                   key={productItem._id}
                   product={productItem}

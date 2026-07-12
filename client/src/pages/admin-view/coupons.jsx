@@ -72,7 +72,7 @@ function AdminCoupons() {
     <div className="flex flex-col gap-8 p-6 md:p-10 animate-in fade-in duration-700">
       <div className="flex flex-col gap-2">
         <h1 className="text-4xl font-serif font-bold tracking-tight uppercase">Promotions Manager</h1>
-        <p className="text-muted-foreground text-sm uppercase tracking-widest font-bold italic">Brand Store Exclusive Rewards</p>
+        <p className="text-muted-foreground text-sm uppercase tracking-widest font-bold italic">woodasa Exclusive Rewards</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

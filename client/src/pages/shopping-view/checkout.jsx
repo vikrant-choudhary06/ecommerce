@@ -154,10 +154,10 @@ function ShoppingCheckout() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="relative h-[300px] w-full overflow-hidden bg-muted flex items-center justify-center">
-        <img src={img} className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-40" />
+        <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80" className="h-full w-full object-cover object-center absolute inset-0 mix-blend-multiply opacity-40" />
         <div className="relative z-10 text-center space-y-2">
             <h1 className="text-5xl font-serif text-foreground uppercase tracking-widest font-bold">Secure Checkout</h1>
-            <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground font-bold italic">Brand Store &copy; 2024</p>
+            <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground font-bold italic">woodasa &copy; 2024</p>
         </div>
       </div>
       

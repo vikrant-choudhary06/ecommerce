@@ -20,7 +20,6 @@ function ShoppingProductDetails() {
   const [reviewMsg, setReviewMsg] = useState("");
   const [rating, setRating] = useState(0);
   const [activeImage, setActiveImage] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
   const [zoomStyle, setZoomStyle] = useState({ display: 'none', backgroundPosition: '0% 0%' });
   const containerRef = useRef(null);
 
@@ -84,14 +83,13 @@ function ShoppingProductDetails() {
         userId: user?.id,
         productId: getCurrentProductId,
         quantity: 1,
-        size: selectedSize
       })
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
         toast({
           title: "Added to Bag",
-          description: `${productDetails?.title} (${selectedSize.toUpperCase()}) added to your collection.`,
+          description: `${productDetails?.title} added to your collection.`,
         });
       }
     });
@@ -211,7 +209,7 @@ function ShoppingProductDetails() {
                         ref={containerRef}
                         onMouseMove={handleMouseMove}
                         onMouseLeave={() => setZoomStyle({ ...zoomStyle, display: 'none' })}
-                        className="relative aspect-[4/5] bg-muted overflow-hidden rounded-sm cursor-crosshair shadow-2xl"
+                        className="relative aspect-[4/5] bg-muted overflow-hidden rounded-none cursor-crosshair shadow-2xl"
                     >
                         <img
                             src={activeImage}
@@ -273,55 +271,24 @@ function ShoppingProductDetails() {
                             <span className="text-[9px] uppercase tracking-widest text-red-600 font-bold mb-1">Season Offer</span>
                             <span className="text-4xl font-bold tracking-tighter text-red-600 dark:text-red-400">
                                 ₹{productDetails?.salePrice}
-                            </span>
+                             </span>
                         </div>
                     )}
                 </div>
 
                 {/* Description */}
-                <p className="text-muted-foreground text-lg leading-relaxed font-serif italic border-l-2 border-primary/20 pl-8 py-1">
+                <p className="text-muted-foreground text-lg leading-relaxed font-serif italic border-l-2 border-primary/45 pl-8 py-1">
                     {productDetails?.description}
                 </p>
 
-                {/* Size Selection */}
-                <div className="space-y-6">
-                    <div className="flex justify-between items-end border-b border-border/40 pb-2">
-                        <label className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground leading-none">Perspective Size</label>
-                        <button className="text-[9px] uppercase tracking-widest text-primary hover:underline font-bold transition-all">Studio Guide</button>
-                    </div>
-                    <div className="flex flex-wrap gap-4">
-                        {['xs', 's', 'm', 'l', 'xl'].map((size) => (
-                        <button
-                            key={size}
-                            onClick={() => setSelectedSize(size)}
-                            className={`w-16 h-16 flex items-center justify-center text-[11px] font-extrabold uppercase tracking-widest transition-all duration-500 rounded-none border-2 ${
-                            selectedSize === size
-                                ? "bg-primary text-white border-primary shadow-2xl scale-110 z-10"
-                                : "bg-transparent text-muted-foreground border-border/40 hover:border-primary/50 hover:text-primary"
-                            }`}
-                        >
-                            {size}
-                        </button>
-                        ))}
-                    </div>
-                </div>
-
                 {/* Actions */}
-                <div className="space-y-6 pt-6">
+                <div className="space-y-6 pt-6 font-sans">
                     <Button
                         disabled={productDetails?.totalStock === 0}
                         onClick={() => {
-                            if(!selectedSize) {
-                                toast({
-                                    title : "Selection Required",
-                                    description: "Please specify your preferred size before proceeding.",
-                                    variant : "destructive"
-                                })
-                                return;
-                            }
                             handleAddToCart(productDetails?._id, productDetails?.totalStock)
                         }}
-                        className="w-full h-24 bg-primary text-primary-foreground hover:bg-zinc-900 transition-all duration-700 rounded-none uppercase tracking-[0.5em] text-[11px] font-black shadow-2xl relative group overflow-hidden"
+                        className="w-full h-24 bg-primary text-primary-foreground hover:bg-[#2c2323] transition-all duration-700 rounded-none uppercase tracking-[0.5em] text-[11px] font-black shadow-2xl relative group overflow-hidden"
                     >
                         <span className="relative z-10 flex items-center gap-4">
                             <ShoppingBag className="w-5 h-5" strokeWidth={1.5} />
@@ -390,7 +357,7 @@ function ShoppingProductDetails() {
                                         <span className="text-[9px] text-muted-foreground">Certified Collector</span>
                                     </div>
                                 </div>
-                                <div className="flex gap-0.5">
+                                <div className="flex gap-0.5 font-sans">
                                     {[1,2,3,4,5].map(s => <Star key={s} className="w-2.5 h-2.5 fill-primary text-primary" />)}
                                 </div>
                             </div>
@@ -409,19 +376,19 @@ function ShoppingProductDetails() {
                 {/* Add Journal Entry */}
                 {user && (
                     <div className="bg-muted/20 p-16 border border-primary/10 space-y-12">
-                        <div className="text-center">
+                        <div className="text-center font-sans">
                             <h3 className="text-2xl font-serif font-bold uppercase tracking-tight mb-2">Pen your Experience</h3>
                             <p className="text-muted-foreground text-xs uppercase tracking-widest font-bold">Contribution to the Collective</p>
                         </div>
                         <div className="space-y-10">
-                            <div className="flex flex-col items-center gap-4">
+                            <div className="flex flex-col items-center gap-4 font-sans">
                                 <Label className="text-[9px] font-bold uppercase tracking-[0.4em] text-primary">Impression Rating</Label>
                                 <StarRatingComponent rating={rating} handleRatingChange={handleRatingChange} />
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-4 font-sans">
                                 <Label className="text-[9px] font-bold uppercase tracking-[0.4em] text-primary">Your Narrative</Label>
                                 <textarea
-                                    className="w-full min-h-[120px] bg-background border-none p-8 text-sm focus:ring-1 focus:ring-primary/20 transition-all font-serif resize-none shadow-inner"
+                                    className="w-full min-h-[120px] bg-background border-none p-8 text-sm focus:ring-1 focus:ring-primary/20 transition-all font-serif resize-none shadow-inner text-foreground placeholder:text-muted-foreground/60"
                                     value={reviewMsg}
                                     onChange={(event) => setReviewMsg(event.target.value)}
                                     placeholder="Describe your journey with this piece..."
@@ -430,7 +397,7 @@ function ShoppingProductDetails() {
                             <Button
                                 onClick={handleAddReview}
                                 disabled={reviewMsg.trim() === "" || rating === 0}
-                                className="w-full h-20 bg-primary text-white hover:bg-black transition-all duration-500 rounded-none uppercase tracking-[0.4em] text-[10px] font-bold disabled:opacity-30"
+                                className="w-full h-20 bg-primary text-white hover:bg-black transition-all duration-500 rounded-none uppercase tracking-[0.4em] text-[10px] font-bold disabled:opacity-30 font-sans"
                             >
                                 Publish to Archives
                             </Button>

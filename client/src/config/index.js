@@ -58,22 +58,21 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "shirts", label: "Shirts" },
-      { id: "pants", label: "Pants & Jeans" },
-      { id: "outerwear", label: "Outerwear" },
+      { id: "personal-care", label: "Personal Care" },
+      { id: "kitchenware", label: "Kitchen & Dining" },
+      { id: "decor", label: "Home Decor & Desk" },
     ],
   },
   {
-    label: "Brand",
+    label: "Material (Brand)",
     name: "brand",
     componentType: "select",
     options: [
-      { id: "nike", label: "Nike" },
-      { id: "adidas", label: "Adidas" },
-      { id: "puma", label: "Puma" },
-      { id: "levi", label: "Levi's" },
-      { id: "zara", label: "Zara" },
-      { id: "h&m", label: "H&M" },
+      { id: "bamboo", label: "Bamboo" },
+      { id: "neem", label: "Neem Wood" },
+      { id: "sandalwood", label: "Sandalwood" },
+      { id: "rosewood", label: "Rosewood" },
+      { id: "teak", label: "Teak Wood" },
     ],
   },
   {
@@ -102,14 +101,14 @@ export const addProductFormElements = [
     name: "colors",
     componentType: "input",
     type: "text",
-    placeholder: "Enter colors separated by comma (e.g. Red, Blue)",
+    placeholder: "Enter colors separated by comma (e.g. Natural, Dark Brown)",
   },
   {
     label: "Sizes",
     name: "sizes",
     componentType: "input",
     type: "text",
-    placeholder: "Enter sizes separated by comma (e.g. S, M, L)",
+    placeholder: "Enter sizes separated by comma (e.g. Standard, Travel Size)",
   },
 ];
 
@@ -120,60 +119,58 @@ export const shoppingViewHeaderMenuItems = [
     path: "/shop/home",
   },
   {
-    id: "products",
-    label: "All Products",
+    id: "about",
+    label: "About Us",
+    path: "/shop/about",
+  },
+  {
+    id: "shop",
+    label: "Shop",
     path: "/shop/listing",
   },
   {
-    id: "shirts",
-    label: "Shirts",
-    path: "/shop/listing",
+    id: "orders",
+    label: "Order",
+    path: "/shop/account",
   },
   {
-    id: "pants",
-    label: "Pants & Jeans",
-    path: "/shop/listing",
+    id: "contact",
+    label: "Contact",
+    path: "/shop/contact",
   },
   {
-    id: "outerwear",
-    label: "Outerwear",
-    path: "/shop/listing",
-  },
-  {
-    id: "search",
-    label: "Search",
-    path: "/shop/search",
+    id: "blog",
+    label: "Blog",
+    path: "/shop/blog",
   },
 ];
 
 export const categoryOptionsMap = {
-  shirts: "Shirts",
-  pants: "Pants & Jeans",
-  outerwear: "Outerwear",
+  "personal-care": "Personal Care",
+  kitchenware: "Kitchen & Dining",
+  decor: "Home Decor & Desk",
 };
 
 export const brandOptionsMap = {
-  nike: "Nike",
-  adidas: "Adidas",
-  puma: "Puma",
-  levi: "Levi",
-  zara: "Zara",
-  "h&m": "H&M",
+  bamboo: "Bamboo",
+  neem: "Neem Wood",
+  sandalwood: "Sandalwood",
+  rosewood: "Rosewood",
+  teak: "Teak Wood",
 };
 
 export const filterOptions = {
   category: [
-    { id: "shirts", label: "Shirts" },
-    { id: "pants", label: "Pants & Jeans" },
-    { id: "outerwear", label: "Outerwear" },
+    { id: "personal-care", label: "Personal Care" },
+    { id: "kitchenware", label: "Kitchen & Dining" },
+    { id: "decor", label: "Home Decor & Desk" },
   ],
   brand: [
-    { id: "nike", label: "Nike" },
-    { id: "adidas", label: "Adidas" },
-    { id: "puma", label: "Puma" },
-    { id: "levi", label: "Levi's" },
-    { id: "zara", label: "Zara" },
-    { id: "h&m", label: "H&M" },
+    { id: "bamboo", label: "Bamboo" },
+    { id: "neem", label: "Neem Wood" },
+    { id: "sandalwood", label: "Sandalwood" },
+    { id: "rosewood", label: "Rosewood" },
+    { id: "teak", label: "Teak Wood" },
   ],
 };
 

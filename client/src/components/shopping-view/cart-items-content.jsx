@@ -95,7 +95,7 @@ function UserCartItemsContent({ cartItem }) {
 
         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
           {cartItem?.color ? `Color: ${cartItem.color}` : ""} {cartItem?.size ? ` / Size: ${cartItem.size}` : ""}
-          {!cartItem?.color && !cartItem?.size ? "Standard / Brand Store Original" : ""}
+          {!cartItem?.color && !cartItem?.size ? "Standard / woodasa Original" : ""}
         </p>
 
         <div className="flex items-center gap-3 mt-4">

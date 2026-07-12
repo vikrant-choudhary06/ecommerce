@@ -1,10 +1,10 @@
-import { filterOptions } from "@/config";
+import { filterOptions as defaultFilterOptions } from "@/config";
 import { Fragment } from "react";
 import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { Separator } from "../ui/separator";
 
-function ProductFilter({ filters, handleFilter }) {
+function ProductFilter({ filters, handleFilter, filterOptions = defaultFilterOptions }) {
   return (
     <div className="bg-background rounded-none border-t border-border">
       <div className="p-4 py-6 border-b border-border">

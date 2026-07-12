@@ -10,7 +10,7 @@ export const addToWishlist = createAsyncThunk(
   "wishlist/addToWishlist",
   async ({ userId, productId }) => {
     const response = await axios.post(
-      `http://localhost:5000/api/shop/wishlist/add`,
+      `/api/shop/wishlist/add`,
       {
         userId,
         productId,
@@ -25,7 +25,7 @@ export const fetchWishlistItems = createAsyncThunk(
   "wishlist/fetchWishlistItems",
   async (userId) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/wishlist/get/${userId}`
+      `/api/shop/wishlist/get/${userId}`
     );
 
     return response.data;
@@ -36,7 +36,7 @@ export const deleteWishlistItem = createAsyncThunk(
   "wishlist/deleteWishlistItem",
   async ({ userId, productId }) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/shop/wishlist/delete/${userId}/${productId}`
+      `/api/shop/wishlist/delete/${userId}/${productId}`
     );
 
     return response.data;

@@ -14,13 +14,13 @@ function ShoppingAccount() {
     <div className="flex flex-col min-h-screen bg-background">
       <div className="relative h-[250px] w-full overflow-hidden">
         <img
-          src={accImg}
+          src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=1600&q=80"
           className="h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
             <div className="text-center space-y-2 animate-in fade-in zoom-in duration-700">
                <h1 className="text-4xl md:text-5xl font-serif text-white italic font-bold tracking-tighter">Your Sanctuary</h1>
-               <p className="text-white/70 text-[10px] md:text-sm uppercase tracking-[0.4em] font-bold">Refining your Brand Store experience</p>
+               <p className="text-white/70 text-[10px] md:text-sm uppercase tracking-[0.4em] font-bold">Refining your woodasa experience</p>
             </div>
         </div>
       </div>

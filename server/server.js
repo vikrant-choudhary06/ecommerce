@@ -22,8 +22,11 @@ const shopCouponRouter = require("./routes/shop/coupon-routes");
 const commonFeatureRouter = require("./routes/common/feature-routes");
 
 // Database connection
+mongoose.set('bufferCommands', false);
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 2000,
+  })
   .then(() => console.log("MongoDB connected"))
   .catch((error) => console.log(error));
 

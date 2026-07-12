@@ -10,7 +10,7 @@ export const validateCoupon = createAsyncThunk(
   "/coupon/validateCoupon",
   async (code) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/coupon/validate/${code}`
+      `/api/shop/coupon/validate/${code}`
     );
 
     return response.data;

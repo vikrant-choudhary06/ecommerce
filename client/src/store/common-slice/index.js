@@ -1,42 +1,74 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const dummyBanners = [
+  {
+    bgClass: "bg-[#d5ecd4]",
+    subTitle: "Test the Quality",
+    title: "Organic Premium Product",
+    description: "eco-friendly Organic Products , bamboo brushes, neem combs, organic oils & more.",
+    btnText: "SHOP NOW",
+  },
+  {
+    bgClass: "bg-[#f3eae1]",
+    subTitle: "Handcrafted Heritage",
+    title: "Artisanal Kitchenware",
+    description: "Made from premium Teak and Rosewood. Durable, natural, and food-safe spoons, bowls, and boards.",
+    btnText: "DISCOVER MORE",
+  },
+  {
+    bgClass: "bg-[#eae1df]",
+    subTitle: "Sustainable Living",
+    title: "Minimalist Home Decor",
+    description: "Bring nature into your workspace with bamboo phone docks, pen stands, and custom wall clocks.",
+    btnText: "BROWSE DECOR",
+  },
+];
+
 const initialState = {
   isLoading: false,
-  featureImageList: [],
+  featureImageList: dummyBanners,
 };
 
 export const getFeatureImages = createAsyncThunk(
   "/order/getFeatureImages",
   async () => {
-    const response = await axios.get(
-      `http://localhost:5000/api/common/feature/get`
-    );
-
-    return response.data;
+    try {
+      const response = await axios.get(`/api/common/feature/get`);
+      if (response?.data?.success && response.data.data && response.data.data.length > 0) {
+        return response.data;
+      }
+      return { success: true, data: dummyBanners };
+    } catch (error) {
+      console.warn("API error, falling back to dummy banners:", error);
+      return { success: true, data: dummyBanners };
+    }
   }
 );
 
 export const addFeatureImage = createAsyncThunk(
   "/order/addFeatureImage",
   async (image) => {
-    const response = await axios.post(
-      `http://localhost:5000/api/common/feature/add`,
-      { image }
-    );
-
-    return response.data;
+    try {
+      const response = await axios.post(`/api/common/feature/add`, { image });
+      return response.data;
+    } catch (error) {
+      console.warn("API error, adding mock feature image locally:", error);
+      return { success: true, data: { image, _id: "mock-" + Date.now() } };
+    }
   }
 );
 
 export const deleteFeatureImage = createAsyncThunk(
   "/order/deleteFeatureImage",
   async (id) => {
-    const response = await axios.delete(
-      `http://localhost:5000/api/common/feature/delete/${id}`
-    );
-
-    return response.data;
+    try {
+      const response = await axios.delete(`/api/common/feature/delete/${id}`);
+      return response.data;
+    } catch (error) {
+      console.warn("API error, deleting mock feature image locally:", error);
+      return { success: true, data: { id } };
+    }
   }
 );
 
@@ -55,7 +87,7 @@ const commonSlice = createSlice({
       })
       .addCase(getFeatureImages.rejected, (state) => {
         state.isLoading = false;
-        state.featureImageList = [];
+        state.featureImageList = dummyBanners;
       })
       .addCase(addFeatureImage.pending, (state) => {
         state.isLoading = true;
@@ -72,8 +104,7 @@ const commonSlice = createSlice({
       })
       .addCase(deleteFeatureImage.fulfilled, (state, action) => {
         state.isLoading = false;
-        // The getFeatureImages call in component will handle the refresh, 
-        // but we can also filter locally if needed.
+        // Optional: filter out if needed
       })
       .addCase(deleteFeatureImage.rejected, (state) => {
         state.isLoading = false;

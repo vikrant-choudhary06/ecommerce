@@ -1,68 +1,128 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { getLocalProducts, saveLocalProducts } from "../../shop/products-slice";
 
 const initialState = {
   isLoading: false,
   productList: [],
 };
 
+function addLocalProduct(formData) {
+  const products = getLocalProducts();
+  const newProduct = {
+    ...formData,
+    _id: "local-product-" + Date.now(),
+    averageReview: 5,
+  };
+  products.push(newProduct);
+  saveLocalProducts(products);
+  return newProduct;
+}
+
+function editLocalProduct(id, formData) {
+  const products = getLocalProducts();
+  const index = products.findIndex((p) => p._id === id);
+  if (index > -1) {
+    products[index] = { ...products[index], ...formData };
+  }
+  saveLocalProducts(products);
+  return products[index];
+}
+
+function deleteLocalProduct(id) {
+  const products = getLocalProducts();
+  const updatedProducts = products.filter((p) => p._id !== id);
+  saveLocalProducts(updatedProducts);
+  return id;
+}
+
 export const addNewProduct = createAsyncThunk(
   "/products/addnewproduct",
   async (formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add",
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      const result = await axios.post(
+        "/api/admin/products/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    return result?.data;
+      if (result?.data?.success) {
+        return result.data;
+      }
+      return { success: true, data: addLocalProduct(formData) };
+    } catch (error) {
+      console.warn("API error, adding product locally:", error);
+      return { success: true, data: addLocalProduct(formData) };
+    }
   }
 );
 
 export const fetchAllProducts = createAsyncThunk(
   "/products/fetchAllProducts",
   async () => {
-    const result = await axios.get(
-      "http://localhost:5000/api/admin/products/get"
-    );
+    try {
+      const result = await axios.get("/api/admin/products/get");
 
-    return result?.data;
+      if (result?.data?.success) {
+        return result.data;
+      }
+      return { success: true, data: getLocalProducts() };
+    } catch (error) {
+      console.warn("API error, fetching products locally:", error);
+      return { success: true, data: getLocalProducts() };
+    }
   }
 );
 
 export const editProduct = createAsyncThunk(
   "/products/editProduct",
   async ({ id, formData }) => {
-    const result = await axios.put(
-      `http://localhost:5000/api/admin/products/edit/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    try {
+      const result = await axios.put(
+        `/api/admin/products/edit/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    return result?.data;
+      if (result?.data?.success) {
+        return result.data;
+      }
+      return { success: true, data: editLocalProduct(id, formData) };
+    } catch (error) {
+      console.warn("API error, editing product locally:", error);
+      return { success: true, data: editLocalProduct(id, formData) };
+    }
   }
 );
 
 export const deleteProduct = createAsyncThunk(
   "/products/deleteProduct",
   async (id) => {
-    const result = await axios.delete(
-      `http://localhost:5000/api/admin/products/delete/${id}`
-    );
+    try {
+      const result = await axios.delete(
+        `/api/admin/products/delete/${id}`
+      );
 
-    return result?.data;
+      if (result?.data?.success) {
+        return result.data;
+      }
+      return { success: true, data: { id: deleteLocalProduct(id) } };
+    } catch (error) {
+      console.warn("API error, deleting product locally:", error);
+      return { success: true, data: { id: deleteLocalProduct(id) } };
+    }
   }
 );
 
-const AdminProductsSlice = createSlice({
+const adminProductsSlice = createSlice({
   name: "adminProducts",
   initialState,
   reducers: {},
@@ -75,11 +135,11 @@ const AdminProductsSlice = createSlice({
         state.isLoading = false;
         state.productList = action.payload.data;
       })
-      .addCase(fetchAllProducts.rejected, (state, action) => {
+      .addCase(fetchAllProducts.rejected, (state) => {
         state.isLoading = false;
-        state.productList = [];
+        state.productList = getLocalProducts();
       });
   },
 });
 
-export default AdminProductsSlice.reducer;
+export default adminProductsSlice.reducer;

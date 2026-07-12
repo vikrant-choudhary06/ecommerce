@@ -33,23 +33,7 @@ function MenuItems() {
 
   function handleNavigate(getCurrentMenuItem) {
     sessionStorage.removeItem("filters");
-    const currentFilter =
-      getCurrentMenuItem.id !== "home" &&
-      getCurrentMenuItem.id !== "products" &&
-      getCurrentMenuItem.id !== "search"
-        ? {
-            category: [getCurrentMenuItem.id],
-          }
-        : null;
-
-    sessionStorage.setItem("filters", JSON.stringify(currentFilter));
-
-    location.pathname.includes("listing") && currentFilter !== null
-      ? setSearchParams(
-          new URLSearchParams(`?category=${getCurrentMenuItem.id}`)
-        )
-      : navigate(getCurrentMenuItem.path);
-      
+    navigate(getCurrentMenuItem.path);
     window.scrollTo(0, 0);
   }
 
@@ -199,8 +183,7 @@ function ShoppingHeader() {
       <div className="flex h-20 items-center justify-between px-4 md:px-8">
         <div className="flex items-center lg:w-1/4">
           <Link to="/shop/home" className="flex flex-col group">
-            <span className="font-serif font-bold text-2xl tracking-[.15em] leading-tight group-hover:tracking-[.25em] transition-all duration-700">BRAND</span>
-            <span className="font-sans font-bold text-[8px] uppercase tracking-[.8em] mt-[-2px] text-muted-foreground ml-0.5">STORE</span>
+            <span className="font-serif font-bold text-2xl tracking-[.15em] leading-tight group-hover:tracking-[.25em] transition-all duration-700 text-foreground">woodasa</span>
           </Link>
         </div>
         

@@ -10,7 +10,7 @@ export const addNewCoupon = createAsyncThunk(
   "/coupons/addNewCoupon",
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/coupon/add",
+      "/api/shop/coupon/add",
       formData
     );
 
@@ -22,7 +22,7 @@ export const fetchAllCoupons = createAsyncThunk(
   "/coupons/fetchAllCoupons",
   async () => {
     const response = await axios.get(
-      "http://localhost:5000/api/shop/coupon/get"
+      "/api/shop/coupon/get"
     );
 
     return response.data;
@@ -33,7 +33,7 @@ export const deleteCoupon = createAsyncThunk(
   "/coupons/deleteCoupon",
   async (id) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/admin/coupon/delete/${id}`
+      `/api/admin/coupon/delete/${id}`
     );
 
     return response.data;

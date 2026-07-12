@@ -10,14 +10,14 @@ const Loader = () => {
             <div className="absolute inset-2 border-[1px] border-primary/30 rounded-full animate-spin duration-[3000ms]"></div>
             {/* Center B Letter */}
             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl font-serif font-bold text-primary italic select-none">B</span>
+                <span className="text-4xl font-serif font-bold text-primary italic select-none">W</span>
             </div>
         </div>
 
         {/* Text Animation */}
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-2xl md:text-4xl font-serif font-bold tracking-[0.3em] text-primary animate-title-fade">
-            BRAND STORE
+            WOODASA
           </h1>
           <p className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground opacity-60 animate-in fade-in slide-in-from-top-1 duration-1000 delay-500">
             Premium Fashion Destination

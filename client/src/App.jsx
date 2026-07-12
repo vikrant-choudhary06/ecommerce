@@ -31,6 +31,8 @@ import ShippingAndReturns from "./pages/shopping-view/returns";
 import SizeGuide from "./pages/shopping-view/size-guide";
 import ScrollToTop from "./components/common/scroll-to-top";
 import WishlistPage from "./pages/shopping-view/wishlist";
+import AboutUs from "./pages/shopping-view/about";
+import Blog from "./pages/shopping-view/blog";
 
 
 function App() {
@@ -116,6 +118,8 @@ function App() {
               <Route path="returns" element={<ShippingAndReturns />} />
               <Route path="size-guide" element={<SizeGuide />} />
               <Route path="wishlist" element={<WishlistPage />} />
+              <Route path="about" element={<AboutUs />} />
+              <Route path="blog" element={<Blog />} />
             </Route>
             <Route path="/unauth-page" element={<UnauthPage />} />
             <Route path="*" element={<NotFound />} />
