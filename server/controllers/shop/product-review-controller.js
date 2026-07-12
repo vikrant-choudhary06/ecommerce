@@ -1,16 +1,22 @@
 const Order = require("../../models/Order");
 const Product = require("../../models/Product");
-const ProductReview = require("../../models/Review");
 
 const addProductReview = async (req, res) => {
   try {
-    const { productId, userId, userName, reviewMessage, reviewValue } =
-      req.body;
+    const { productId, userId, userName, reviewMessage, reviewValue } = req.body;
 
+    // Reject if rating is invalid
+    if (reviewValue === undefined || reviewValue < 1 || reviewValue > 5) {
+      return res.status(400).json({
+        success: false,
+        message: "Rating (reviewValue) must be between 1 and 5",
+      });
+    }
+
+    // Verify they bought the product
     const order = await Order.findOne({
       userId,
       "cartItems.productId": productId,
-      // orderStatus: "confirmed" || "delivered",
     });
 
     if (!order) {
@@ -20,45 +26,54 @@ const addProductReview = async (req, res) => {
       });
     }
 
-    const checkExistinfReview = await ProductReview.findOne({
-      productId,
-      userId,
-    });
-
-    if (checkExistinfReview) {
-      return res.status(400).json({
-        success: false,
-        message: "You already reviewed this product!",
-      });
+    const product = await Product.findById(productId);
+    if (!product) {
+       return res.status(404).json({
+         success: false,
+         message: "Product not found",
+       });
     }
 
-    const newReview = new ProductReview({
-      productId,
-      userId,
-      userName,
-      reviewMessage,
-      reviewValue,
-    });
+    // Check if user already reviewed
+    const existingReviewIndex = product.reviews.findIndex(
+      (r) => r.userId.toString() === userId.toString()
+    );
 
-    await newReview.save();
+    let review;
+    if (existingReviewIndex !== -1) {
+      // Update existing review
+      product.reviews[existingReviewIndex].reviewValue = reviewValue;
+      product.reviews[existingReviewIndex].reviewMessage = reviewMessage || "";
+      product.reviews[existingReviewIndex].createdAt = new Date();
+      review = product.reviews[existingReviewIndex];
+    } else {
+      // Add new review
+      review = {
+        userId,
+        userName: userName || req.user.userName || "User",
+        reviewValue,
+        reviewMessage: reviewMessage || "",
+        createdAt: new Date(),
+      };
+      product.reviews.push(review);
+    }
 
-    const reviews = await ProductReview.find({ productId });
-    const totalReviewsLength = reviews.length;
-    const averageReview =
-      reviews.reduce((sum, reviewItem) => sum + reviewItem.reviewValue, 0) /
-      totalReviewsLength;
-
-    await Product.findByIdAndUpdate(productId, { averageReview });
+    // Recalculate and save
+    product.recalculateRatings();
+    await product.save();
 
     res.status(201).json({
       success: true,
-      data: newReview,
+      message: "Review submitted successfully",
+      data: review,
+      averageReview: product.averageReview,
+      numReviews: product.numReviews,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.status(500).json({
       success: false,
-      message: "Error",
+      message: "Server Error",
     });
   }
 };
@@ -67,18 +82,69 @@ const getProductReviews = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    const reviews = await ProductReview.find({ productId });
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
     res.status(200).json({
       success: true,
-      data: reviews,
+      data: product.reviews,
     });
   } catch (e) {
-    console.log(e);
+    console.error(e);
     res.status(500).json({
       success: false,
-      message: "Error",
+      message: "Server Error",
     });
   }
 };
 
-module.exports = { addProductReview, getProductReviews };
+const deleteProductReview = async (req, res) => {
+  try {
+    const { productId, reviewId } = req.params;
+    const userId = req.user._id.toString();
+
+    const product = await Product.findById(productId);
+    if (!product) {
+       return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    const reviewIndex = product.reviews.findIndex(r => r._id.toString() === reviewId);
+    if (reviewIndex === -1) {
+       return res.status(404).json({ success: false, message: "Review not found" });
+    }
+
+    const review = product.reviews[reviewIndex];
+    
+    // Check ownership or admin status
+    if (review.userId.toString() !== userId && req.user.role !== 'admin') {
+       return res.status(403).json({ success: false, message: "Unauthorized to delete this review" });
+    }
+
+    // Remove review
+    product.reviews.splice(reviewIndex, 1);
+    
+    product.recalculateRatings();
+    await product.save();
+
+    res.status(200).json({
+       success: true,
+       message: "Review deleted successfully",
+       averageReview: product.averageReview,
+       numReviews: product.numReviews,
+    });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+module.exports = { addProductReview, getProductReviews, deleteProductReview };

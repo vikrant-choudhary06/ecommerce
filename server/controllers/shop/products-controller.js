@@ -79,4 +79,25 @@ const getProductDetails = async (req, res) => {
   }
 };
 
-module.exports = { getFilteredProducts, getProductDetails };
+const getFilterOptions = async (req, res) => {
+  try {
+    const categories = await Product.distinct("category");
+    const brands = await Product.distinct("brand");
+
+    res.status(200).json({
+      success: true,
+      data: {
+        categories: categories.map(c => ({ id: c, label: c })),
+        brands: brands.map(b => ({ id: b, label: b }))
+      }
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured",
+    });
+  }
+};
+
+module.exports = { getFilteredProducts, getProductDetails, getFilterOptions };

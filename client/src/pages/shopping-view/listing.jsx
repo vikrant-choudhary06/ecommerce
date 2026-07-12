@@ -13,6 +13,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { sortOptions, filterOptions } from "@/config";
 import { addToCart, fetchCartItems, setCartDrawer } from "@/store/shop/cart-slice";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
+import axios from "axios";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,9 @@ function createSearchParamsHelper(filterParams) {
   const queryParams = [];
 
   for (const [key, value] of Object.entries(filterParams)) {
-    if (Array.isArray(value) && value.length > 0) {
+    if (key === "inStock" && value === true) {
+      queryParams.push(`inStock=true`);
+    } else if (Array.isArray(value) && value.length > 0) {
       const paramValue = value.join(",");
 
       queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
@@ -82,9 +85,24 @@ function ShoppingListing() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
   const [filters, setFilters] = useState({});
+  const [dynamicFilters, setDynamicFilters] = useState({ category: [], brand: [] });
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchFilters() {
+      try {
+        const response = await axios.get("/api/shop/products/filter-options");
+        if (response.data?.success) {
+          setDynamicFilters(response.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch filter options", error);
+      }
+    }
+    fetchFilters();
+  }, []);
 
   const categorySearchParam = searchParams.get("category");
 
@@ -94,6 +112,16 @@ function ShoppingListing() {
 
   function handleFilter(getSectionId, getCurrentOption) {
     let cpyFilters = { ...filters };
+    
+    if (getSectionId === "inStock") {
+      if (getCurrentOption) cpyFilters.inStock = true;
+      else delete cpyFilters.inStock;
+      
+      setFilters(cpyFilters);
+      sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
+      return;
+    }
+
     const indexOfCurrentSection = Object.keys(cpyFilters).indexOf(getSectionId);
 
     if (indexOfCurrentSection === -1) {
@@ -173,19 +201,12 @@ function ShoppingListing() {
   }, [dispatch, sort, filters]);
 
 
-  const customFilterOptions = {
-    category: filterOptions.category.filter(
-      (option) => option.id !== "personal-care"
-    ),
-    brand: filterOptions.brand.filter((option) => option.id !== "neem"),
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-[240px_1fr] gap-8 p-4 md:p-8 max-w-[1600px] mx-auto w-full">
       <ProductFilter
         filters={filters}
         handleFilter={handleFilter}
-        filterOptions={customFilterOptions}
+        filterOptions={dynamicFilters}
       />
       <div className="bg-background w-full rounded-none">
         <div className="p-4 border-b border-border flex items-center justify-between">

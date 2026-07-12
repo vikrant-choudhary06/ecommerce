@@ -90,7 +90,7 @@ function WishlistPage() {
               >
                 <div className="relative overflow-hidden mb-6 aspect-[4/5] bg-muted/20">
                   <img
-                    src={item.image}
+                    src={typeof item.image === 'string' ? item.image : item.image?.url}
                     alt={item.title}
                     className="w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 filter brightness-[0.95] dark:brightness-[0.85] group-hover:brightness-100"
                   />

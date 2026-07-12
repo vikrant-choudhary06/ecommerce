@@ -20,7 +20,7 @@ function ShoppingCheckout() {
   
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
   const [isPaymentStart, setIsPaymemntStart] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("paypal");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [promoCode, setPromoCode] = useState("");
   const [isCouponApplied, setIsCouponApplied] = useState(false);
@@ -182,21 +182,18 @@ function ShoppingCheckout() {
                    2. Payment Selection
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label className={`flex items-center justify-between p-6 border transition-all cursor-pointer ${paymentMethod === 'paypal' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border hover:border-zinc-500'}`}>
-                        <div className="flex flex-col gap-1">
-                            <span className="font-bold uppercase tracking-widest text-xs">PayPal / Online</span>
-                            <span className="text-[10px] text-muted-foreground italic font-serif">Secure & Fast</span>
-                        </div>
+                    <label className={`flex items-center justify-between p-6 border transition-all cursor-pointer ${paymentMethod === 'razorpay' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border hover:border-zinc-500'}`}>
+                        <span className="font-bold uppercase tracking-widest text-xs">Razorpay / Card / UPI</span>
                         <input 
                             type="radio" 
                             name="paymentMethod" 
-                            value="paypal" 
-                            checked={paymentMethod === "paypal"} 
-                            onChange={() => setPaymentMethod("paypal")} 
-                            className="hidden"
+                            value="razorpay" 
+                            checked={paymentMethod === "razorpay"} 
+                            onChange={() => setPaymentMethod("razorpay")} 
+                            className="sr-only"
                         />
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'paypal' ? 'border-primary' : 'border-muted'}`}>
-                             {paymentMethod === 'paypal' && <div className="w-2 h-2 bg-primary rounded-full transition-all" />}
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'razorpay' ? 'border-primary' : 'border-muted'}`}>
+                             {paymentMethod === 'razorpay' && <div className="w-2 h-2 bg-primary rounded-full transition-all" />}
                         </div>
                     </label>
                     <label className={`flex items-center justify-between p-6 border transition-all cursor-pointer ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border hover:border-zinc-500'}`}>

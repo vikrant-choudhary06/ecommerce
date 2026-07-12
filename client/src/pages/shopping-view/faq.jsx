@@ -18,7 +18,7 @@ function FAQ() {
     },
     {
       question: "What payment methods do you accept?",
-      answer: "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and Apple Pay."
+      answer: "We accept all major credit cards (Visa, MasterCard, American Express), Razorpay, UPI, and Apple Pay."
     }
   ];
 

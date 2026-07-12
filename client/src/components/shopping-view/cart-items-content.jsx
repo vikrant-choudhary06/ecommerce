@@ -71,7 +71,7 @@ function UserCartItemsContent({ cartItem }) {
     <div className="flex items-start gap-4 pb-6 border-b border-border/30 last:border-0">
       <div className="relative group shrink-0">
         <img
-          src={cartItem?.image}
+          src={typeof cartItem?.image === 'string' ? cartItem?.image : cartItem?.image?.url}
           alt={cartItem?.title}
           className="w-24 h-32 object-cover rounded-sm grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500"
         />

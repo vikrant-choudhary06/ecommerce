@@ -53,15 +53,15 @@ function ShoppingProductTile({
       >
         <div className="relative overflow-hidden mb-4 rounded-md">
           <img
-            src={product?.image}
+            src={typeof product?.image === 'string' ? product?.image : product?.image?.url}
             alt={product?.title}
             className="w-full h-[400px] object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
           />
-          {product?.totalStock === 0 ? (
+          {!product?.inStock ? (
             <Badge className="absolute top-3 left-3 bg-red-600 hover:bg-red-700 text-white px-2 py-1 uppercase text-xs tracking-wider">
               Out Of Stock
             </Badge>
-          ) : product?.totalStock < 10 ? (
+          ) : product?.stockStatus === 'low_stock' ? (
             <Badge className="absolute top-3 left-3 bg-red-600 hover:bg-red-700 text-white px-2 py-1 uppercase text-xs tracking-wider">
               {`Low Stock`}
             </Badge>
@@ -112,7 +112,7 @@ function ShoppingProductTile({
         </CardContent>
       </div>
       <CardFooter className="p-0 mt-auto">
-        {product?.totalStock === 0 ? (
+        {!product?.inStock ? (
           <Button className="w-full uppercase tracking-wider opacity-60 cursor-not-allowed">
             Out Of Stock
           </Button>

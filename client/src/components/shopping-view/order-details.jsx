@@ -213,7 +213,7 @@ function ShoppingOrderDetailsView({ orderDetails }) {
               {orderDetails?.cartItems?.map((item) => (
                 <div key={item.productId} className="flex items-center gap-6 group bg-white border border-zinc-200/50 p-4 shadow-sm">
                   <div className="w-16 h-20 shrink-0 bg-zinc-50 border border-zinc-100 overflow-hidden rounded-none">
-                    <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={typeof item.image === 'string' ? item.image : item.image?.url} alt={item.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </div>
                   <div className="flex-1 space-y-1">
                     <h4 className="text-xs font-bold text-zinc-800 uppercase tracking-widest leading-tight">{item.title}</h4>

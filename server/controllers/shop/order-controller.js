@@ -1,4 +1,3 @@
-const paypal = require("../../helpers/paypal");
 const Order = require("../../models/Order");
 const Cart = require("../../models/Cart");
 const Product = require("../../models/Product");
@@ -20,171 +19,50 @@ const createOrder = async (req, res) => {
       cartId,
     } = req.body;
 
-    if (paymentMethod === "cod") {
-      const newlyCreatedOrder = new Order({
-        userId,
-        cartId,
-        cartItems,
-        addressInfo,
-        orderStatus: "confirmed",
-        paymentMethod: "cod",
-        paymentStatus: "pending",
-        totalAmount,
-        orderDate,
-        orderUpdateDate,
-        paymentId: "COD-" + Date.now(),
-        payerId: "COD-" + userId,
-      });
-
-      await newlyCreatedOrder.save();
-
-      for (let item of cartItems) {
-        let product = await Product.findById(item.productId);
-        if (!product) {
-          return res.status(404).json({
-            success: false,
-            message: `Not enough stock for this product ${product?.title}`,
-          });
-        }
-        product.totalStock -= item.quantity;
-        await product.save();
-      }
-
-      const cart = await Cart.findById(cartId);
-      if (cart) {
-        cart.items = cart.items.filter(
-          (item) =>
-            !cartItems.some(
-              (orderItem) => 
-                orderItem.productId === item.productId.toString() &&
-                orderItem.color === item.color &&
-                orderItem.size === item.size
-            )
-        );
-        await cart.save();
-      }
-
-      return res.status(201).json({
-        success: true,
-        orderId: newlyCreatedOrder._id,
-      });
-    }
-
-    const create_payment_json = {
-      intent: "sale",
-      payer: {
-        payment_method: "paypal",
-      },
-      redirect_urls: {
-        return_url: "http://localhost:5173/shop/paypal-return",
-        cancel_url: "http://localhost:5173/shop/paypal-cancel",
-      },
-      transactions: [
-        {
-          item_list: {
-            items: cartItems.map((item) => ({
-              name: item.title,
-              sku: item.productId,
-              price: item.price.toFixed(2),
-              currency: "USD",
-              quantity: item.quantity,
-            })),
-          },
-          amount: {
-            currency: "USD",
-            total: totalAmount.toFixed(2),
-          },
-          description: "description",
-        },
-      ],
-    };
-
-    paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      if (error) {
-        console.log(error);
-
-        return res.status(500).json({
-          success: false,
-          message: "Error while creating paypal payment",
-        });
-      } else {
-        const newlyCreatedOrder = new Order({
-          userId,
-          cartId,
-          cartItems,
-          addressInfo,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          totalAmount,
-          orderDate,
-          orderUpdateDate,
-          paymentId,
-          payerId,
-        });
-
-        await newlyCreatedOrder.save();
-
-        const approvalURL = paymentInfo.links.find(
-          (link) => link.rel === "approval_url"
-        ).href;
-
-        res.status(201).json({
-          success: true,
-          approvalURL,
-          orderId: newlyCreatedOrder._id,
-        });
-      }
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Some error occured!",
-    });
-  }
-};
-
-const capturePayment = async (req, res) => {
-  try {
-    const { paymentId, payerId, orderId } = req.body;
-
-    let order = await Order.findById(orderId);
-
-    if (!order) {
-      return res.status(404).json({
+    if (paymentMethod !== "cod") {
+      return res.status(400).json({
         success: false,
-        message: "Order can not be found",
+        message: "This endpoint is only for Cash on Delivery orders. Please use the Razorpay checkout flow for card/upi payments.",
       });
     }
 
-    order.paymentStatus = "paid";
-    order.orderStatus = "confirmed";
-    order.paymentId = paymentId;
-    order.payerId = payerId;
+    const newlyCreatedOrder = new Order({
+      userId,
+      cartId,
+      cartItems: req.body.cartItems.map(item => ({
+        ...item,
+        image: typeof item.image === 'string' ? item.image : item?.image?.url || ''
+      })),
+      addressInfo,
+      orderStatus: "confirmed",
+      paymentMethod: "cod",
+      paymentStatus: "pending",
+      totalAmount,
+      orderDate,
+      orderUpdateDate,
+      paymentId: "COD-" + Date.now(),
+      payerId: "COD-" + userId,
+    });
 
-    for (let item of order.cartItems) {
+    await newlyCreatedOrder.save();
+
+    for (let item of cartItems) {
       let product = await Product.findById(item.productId);
-
       if (!product) {
         return res.status(404).json({
           success: false,
-          message: `Not enough stock for this product ${product.title}`,
+          message: `Not enough stock for this product ${product?.title}`,
         });
       }
-
       product.totalStock -= item.quantity;
-
       await product.save();
     }
 
-    const getCartId = order.cartId;
-    const cart = await Cart.findById(getCartId);
-
+    const cart = await Cart.findById(cartId);
     if (cart) {
       cart.items = cart.items.filter(
         (item) =>
-          !order.cartItems.some(
+          !cartItems.some(
             (orderItem) => 
               orderItem.productId === item.productId.toString() &&
               orderItem.color === item.color &&
@@ -194,13 +72,11 @@ const capturePayment = async (req, res) => {
       await cart.save();
     }
 
-    await order.save();
-
-    res.status(200).json({
+    return res.status(201).json({
       success: true,
-      message: "Order confirmed",
-      data: order,
+      orderId: newlyCreatedOrder._id,
     });
+
   } catch (e) {
     console.log(e);
     res.status(500).json({
@@ -209,6 +85,8 @@ const capturePayment = async (req, res) => {
     });
   }
 };
+
+// Removed capturePayment logic
 
 const getAllOrdersByUser = async (req, res) => {
   try {
@@ -264,7 +142,6 @@ const getOrderDetails = async (req, res) => {
 
 module.exports = {
   createOrder,
-  capturePayment,
   getAllOrdersByUser,
   getOrderDetails,
 };

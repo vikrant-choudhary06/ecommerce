@@ -32,7 +32,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   useEffect(() => {
     if (productDetails) {
-      setActiveImage(productDetails?.image);
+      setActiveImage(typeof productDetails?.image === 'string' ? productDetails?.image : productDetails?.image?.url);
     }
   }, [productDetails]);
 
@@ -180,6 +180,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
       : 0;
 
   const otherImages = productDetails?.images || [];
+  const allImageUrls = [productDetails?.image, ...otherImages].map(img => typeof img === 'string' ? img : img?.url).filter(Boolean);
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
@@ -187,7 +188,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
         <div className="flex flex-col md:flex-row gap-4 h-full bg-muted/10 p-4">
            {/* THUMBNAILS */}
            <div className="flex md:flex-col gap-2 order-2 md:order-1 overflow-x-auto md:overflow-x-visible">
-              {[productDetails?.image, ...otherImages].map((img, idx) => (
+              {allImageUrls.map((img, idx) => (
                 <div 
                   key={idx}
                   onClick={() => setActiveImage(img)}
@@ -252,12 +253,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
           </div>
 
           <div className="mb-10">
-            {productDetails?.totalStock > 0 && productDetails?.totalStock < 10 && (
+            {productDetails?.stockStatus === 'low_stock' && (
               <p className="text-red-600 font-bold text-[10px] uppercase tracking-[0.2em] mb-4 animate-pulse">
                 🔥 Only {productDetails?.totalStock} left! Grab yours now
               </p>
             )}
-            {productDetails?.totalStock === 0 ? (
+            {!productDetails?.inStock ? (
               <Button className="w-full h-14 bg-muted text-muted-foreground cursor-not-allowed rounded-none uppercase tracking-widest font-bold text-xs">
                 Sold Out
               </Button>

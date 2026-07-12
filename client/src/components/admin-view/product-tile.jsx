@@ -14,7 +14,7 @@ function AdminProductTile({
       <div>
         <div className="relative">
           <img
-            src={product?.image}
+            src={typeof product?.image === 'string' ? product?.image : product?.image?.url}
             alt={product?.title}
             className="w-full h-[300px] object-cover rounded-t-lg"
           />

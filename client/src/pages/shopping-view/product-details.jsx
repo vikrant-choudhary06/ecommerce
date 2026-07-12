@@ -43,7 +43,7 @@ function ShoppingProductDetails() {
     if (productDetails) {
       dispatch(getReviews(productDetails?._id));
       dispatch(fetchRecommendedProducts(productDetails?.category));
-      setActiveImage(productDetails?.image);
+      setActiveImage(typeof productDetails?.image === 'string' ? productDetails?.image : productDetails?.image?.url);
     }
   }, [productDetails, dispatch]);
 
@@ -158,6 +158,7 @@ function ShoppingProductDetails() {
       : 0;
 
   const otherImages = productDetails?.images || [];
+  const allImageUrls = [productDetails?.image, ...otherImages].map(img => typeof img === 'string' ? img : img?.url).filter(Boolean);
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-10 pb-32">
@@ -186,7 +187,7 @@ function ShoppingProductDetails() {
              <div className="flex flex-col-reverse lg:flex-row gap-6">
                 {/* Thumbnails */}
                 <div className="flex lg:flex-col gap-4 overflow-x-auto lg:overflow-x-visible pb-4 lg:pb-0 scrollbar-hide">
-                    {[productDetails?.image, ...otherImages].map((img, idx) => (
+                    {allImageUrls.map((img, idx) => (
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}

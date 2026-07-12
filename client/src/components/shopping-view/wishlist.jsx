@@ -80,7 +80,7 @@ function UserWishlist() {
                 <Link to={`/shop/product/${item.productId}`}>
                     <div className="relative overflow-hidden mb-4 aspect-[4/5] bg-muted/20">
                     <img
-                        src={item.image}
+                        src={typeof item.image === 'string' ? item.image : item.image?.url}
                         alt={item.title}
                         className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105"
                     />
